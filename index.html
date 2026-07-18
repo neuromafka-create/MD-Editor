@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MD Editor</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand" aria-hidden="true">
+          <span class="brand-mark">M</span>
+          <span class="brand-name">MD Editor</span>
+        </div>
+        <div class="toolbar-group toolbar-files">
+          <button id="newButton" type="button">Новый</button>
+          <button id="openButton" type="button">Открыть</button>
+          <button id="saveButton" type="button" class="btn-primary" title="Сохранить (Ctrl+S)">Сохранить</button>
+          <button id="saveAsButton" type="button" title="Сохранить как… (Ctrl+Shift+S)">Сохранить как…</button>
+          <button id="exportButton" type="button">HTML</button>
+          <button id="exportDocxButton" type="button" title="Экспортировать в Word (.docx)">DOCX</button>
+        </div>
+        <span class="toolbar-divider" aria-hidden="true"></span>
+        <div class="toolbar-group toolbar-formatting" role="toolbar" aria-label="Форматирование">
+          <button id="undoButton" type="button" class="toolbar-icon-button" title="Отменить"><span>↶</span></button>
+          <button id="redoButton" type="button" class="toolbar-icon-button" title="Повторить"><span>↷</span></button>
+          <button id="cutButton" type="button" class="toolbar-icon-button" title="Вырезать"><span>✂</span></button>
+          <button id="copyButton" type="button" class="toolbar-icon-button" title="Копировать"><span>⧉</span></button>
+          <button id="pasteButton" type="button" class="toolbar-icon-button" title="Вставить"><span>⇩</span></button>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <button id="boldButton" type="button" class="toolbar-icon-button" title="Жирный"><span>B</span></button>
+          <button id="italicButton" type="button" class="toolbar-icon-button" title="Курсив"><span>I</span></button>
+          <button id="inlineCodeButton" type="button" class="toolbar-icon-button" title="Инлайн-код"><span>`</span></button>
+          <button id="superscriptButton" type="button" class="toolbar-icon-button" title="Верхний индекс"><span>x²</span></button>
+          <button id="subscriptButton" type="button" class="toolbar-icon-button" title="Нижний индекс"><span>x₂</span></button>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <button id="heading1Button" type="button" class="toolbar-icon-button" title="Заголовок H1"><span>H1</span></button>
+          <button id="heading2Button" type="button" class="toolbar-icon-button" title="Заголовок H2"><span>H2</span></button>
+          <button id="heading3Button" type="button" class="toolbar-icon-button" title="Заголовок H3"><span>H3</span></button>
+          <button id="heading4Button" type="button" class="toolbar-icon-button" title="Заголовок H4"><span>H4</span></button>
+          <span class="toolbar-divider" aria-hidden="true"></span>
+          <button id="unorderedListButton" type="button" class="toolbar-icon-button" title="Маркированный список"><span>•</span></button>
+          <button id="orderedListButton" type="button" class="toolbar-icon-button" title="Нумерованный список"><span>1.</span></button>
+          <button id="quoteButton" type="button" class="toolbar-icon-button" title="Цитата"><span>❝</span></button>
+          <button id="codeButton" type="button" class="toolbar-icon-button" title="Блок кода"><span>&lt;/&gt;</span></button>
+          <button id="hrButton" type="button" class="toolbar-icon-button" title="Горизонтальная линия"><span>—</span></button>
+          <button id="imageButton" type="button" class="toolbar-icon-button" title="Вставить изображение"><span>▣</span></button>
+          <button id="linkButton" type="button" class="toolbar-icon-button" title="Вставить ссылку"><span>🔗</span></button>
+        </div>
+        <div class="topbar-actions">
+          <button id="outlineToggle" type="button" class="btn-ghost" title="Показать/скрыть панель оглавления">Оглавление</button>
+          <button id="themeToggle" type="button">Светлая тема</button>
+        </div>
+      </header>
+
+      <div class="tools-row">
+        <div class="tab-list" id="tabList" role="tablist" aria-label="Открытые документы"></div>
+        <div class="search-bar">
+          <input id="searchInput" type="search" placeholder="Найти…" autocomplete="off" spellcheck="false" />
+          <input id="replaceInput" type="text" placeholder="Заменить на…" autocomplete="off" spellcheck="false" />
+          <button id="findNextButton" type="button" title="Найти далее (Enter)">Найти</button>
+          <button id="replaceOneButton" type="button" title="Заменить текущее">Заменить</button>
+          <button id="replaceAllButton" type="button" title="Заменить все">Все</button>
+          <span id="searchMatchInfo" class="search-match-info" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <section class="editor-layout" id="editorLayout">
+        <aside class="outline-panel panel" id="outlinePanel" aria-label="Оглавление документа">
+          <div class="panel-title outline-panel-title">
+            <span>Оглавление</span>
+            <div class="outline-actions">
+              <button id="insertTocButton" type="button" class="outline-action-btn" title="Вставить или обновить оглавление в документе">Вставить</button>
+              <button id="refreshTocButton" type="button" class="outline-action-btn" title="Обновить блок TOC в документе">Обновить</button>
+            </div>
+          </div>
+          <nav id="outlineNav" class="outline-nav" aria-label="Структура документа"></nav>
+          <div id="outlineEmpty" class="outline-empty">Нет заголовков. Добавьте H1–H4.</div>
+        </aside>
+        <div class="split-panes" id="splitPanes">
+          <div class="panel editor-panel" id="editorPanel">
+            <div class="panel-title">Редактор</div>
+            <div class="editor-wrapper">
+              <div class="line-numbers" id="lineNumbers">1</div>
+              <textarea id="markdownInput" spellcheck="false"></textarea>
+            </div>
+            <div class="statusbar">
+              <span id="wordCount">0 слов</span>
+              <span id="charCount">0 символов</span>
+              <span id="cursorPosition">Строка 1, позиция 1</span>
+            </div>
+          </div>
+          <div
+            class="split-gutter"
+            id="splitGutter"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Изменить ширину панелей"
+            aria-valuemin="20"
+            aria-valuemax="80"
+            aria-valuenow="50"
+            tabindex="0"
+            title="Перетащите, чтобы изменить ширину. Двойной щелчок — 50/50"
+          ></div>
+          <div class="panel preview-panel" id="previewPanel">
+            <div class="panel-title">Предпросмотр</div>
+            <div id="previewOutput" class="preview-output"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
