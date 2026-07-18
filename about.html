@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>О проекте — MD Editor</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      .about-page {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+
+      .about-header {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+
+      .about-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .about-logo .brand-mark {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        border-radius: 12px;
+      }
+
+      .about-logo .brand-name {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .about-tagline {
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.6;
+        max-width: 540px;
+        margin: 0 auto;
+      }
+
+      .about-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--accent-text);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 32px;
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        transition: background 0.12s ease, border-color 0.12s ease;
+      }
+
+      .about-back:hover {
+        background: var(--button-solid-hover);
+        border-color: var(--border-strong);
+        color: var(--text);
+      }
+
+      .about-section {
+        margin-bottom: 36px;
+      }
+
+      .about-section h2 {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0 0 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+      }
+
+      .about-section h3 {
+        font-size: 15px;
+        font-weight: 650;
+        margin: 20px 0 10px;
+        color: var(--text);
+      }
+
+      .about-section p {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin: 8px 0;
+      }
+
+      .about-section ul {
+        color: var(--text-secondary);
+        padding-left: 1.4em;
+        margin: 8px 0;
+        line-height: 1.7;
+      }
+
+      .about-section li {
+        margin: 4px 0;
+      }
+
+      .about-section code {
+        font-family: var(--font-mono);
+        font-size: 0.88em;
+        background: color-mix(in srgb, var(--surface-2) 90%, var(--accent) 5%);
+        color: var(--accent-text);
+        padding: 0.15em 0.4em;
+        border-radius: 5px;
+        border: 1px solid var(--border);
+      }
+
+      .about-section pre {
+        margin: 12px 0;
+        padding: 14px 16px;
+        overflow: auto;
+        border-radius: var(--radius-md);
+        background: color-mix(in srgb, var(--surface) 80%, #000 20%);
+        border: 1px solid var(--border);
+      }
+
+      body[data-theme='light'] .about-section pre {
+        background: var(--surface-2);
+      }
+
+      .about-section pre code {
+        display: block;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        font-size: 0.88em;
+        line-height: 1.55;
+        white-space: pre;
+      }
+
+      .about-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        font-size: 0.95em;
+      }
+
+      .about-table th,
+      .about-table td {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        text-align: left;
+      }
+
+      .about-table th {
+        background: var(--surface-2);
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .about-table td {
+        color: var(--text-secondary);
+      }
+
+      .about-table tr:nth-child(even) td {
+        background: color-mix(in srgb, var(--surface-2) 40%, transparent);
+      }
+
+      .about-links {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        flex-wrap: wrap;
+      }
+
+      .about-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      }
+
+      .about-links a:hover {
+        background: var(--button-solid-hover);
+        border-color: var(--border-strong);
+        color: var(--text);
+      }
+
+      .about-links a.primary {
+        background: var(--accent-soft);
+        border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+        color: var(--accent-text);
+      }
+
+      .about-links a.primary:hover {
+        background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+        border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+        color: var(--accent-hover);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="about-page">
+      <a href="/" class="about-back">&larr; Назад к редактору</a>
+
+      <header class="about-header">
+        <div class="about-logo">
+          <span class="brand-mark">M</span>
+          <span class="brand-name">MD Editor</span>
+        </div>
+        <p class="about-tagline">
+          Markdown-редактор для десктопа и браузера с живым предпросмотром, вкладками, оглавлением и экспортом в HTML/DOCX.
+        </p>
+        <div class="about-links">
+          <a href="https://github.com/neuromafka-create/MD-Editor" class="primary" target="_blank" rel="noopener">GitHub</a>
+          <a href="/">Открыть редактор</a>
+        </div>
+      </header>
+
+      <section class="about-section">
+        <h2>Возможности</h2>
+
+        <h3>Редактор и предпросмотр</h3>
+        <ul>
+          <li>Двухпанельный интерфейс: исходный Markdown и HTML-предпросмотр</li>
+          <li>Изменяемая граница между панелями (перетаскивание, клавиатура, двойной щелчок &mdash; 50/50)</li>
+          <li>Живой рендер через <code>marked</code></li>
+          <li>Нумерация строк и подсветка текущей строки</li>
+          <li>Статус-бар: число слов, символов, позиция курсора</li>
+          <li>Копирование содержимого блоков кода в превью</li>
+          <li>Тёмная и светлая темы (сохраняются в <code>localStorage</code>)</li>
+        </ul>
+
+        <h3>Вкладки</h3>
+        <ul>
+          <li>Несколько документов одновременно</li>
+          <li>Переключение вкладок с сохранением содержимого, курсора и прокрутки</li>
+          <li>Отдельная история undo/redo на каждую вкладку</li>
+          <li>Индикатор несохранённых изменений</li>
+          <li>Закрытие вкладки с подтверждением</li>
+        </ul>
+
+        <h3>Файлы</h3>
+        <ul>
+          <li><strong>Открыть:</strong> диалог выбора <code>.md</code> / <code>.markdown</code> / <code>.mdown</code> / <code>.txt</code></li>
+          <li><strong>Сохранить</strong> (<code>Ctrl+S</code>): тихая перезапись открытого файла</li>
+          <li><strong>Сохранить как&hellip;</strong> (<code>Ctrl+Shift+S</code>): диалог выбора пути</li>
+          <li><strong>Tauri (десктоп):</strong> нативные диалоги и запись на диск</li>
+          <li><strong>Браузер:</strong> File System Access API (Chrome / Edge) или fallback &mdash; скачивание</li>
+        </ul>
+
+        <h3>Экспорт</h3>
+        <ul>
+          <li><strong>HTML</strong> &mdash; полноценный HTML-документ</li>
+          <li><strong>DOCX</strong> &mdash; Word-документ (заголовки, списки, код, цитаты, ссылки, индексы)</li>
+        </ul>
+
+        <h3>Форматирование</h3>
+        <p>Панель инструментов: отмена/повтор, вырезать/копировать/вставить, жирный, курсив, инлайн-код, верхний/нижний индекс, заголовки H1&ndash;H4, списки, цитата, блок кода, горизонтальная линия, вставка изображения и ссылки.</p>
+        <p>Подсветка активных кнопок: если курсор внутри форматирования, соответствующая кнопка подсвечивается.</p>
+
+        <h3>Оглавление (TOC)</h3>
+        <ul>
+          <li>Боковая панель структуры документа (H1&ndash;H4)</li>
+          <li>Клик по пункту &mdash; переход к заголовку</li>
+          <li>Подсветка текущего раздела по позиции курсора</li>
+          <li>Вставка / обновление блока TOC в документе</li>
+        </ul>
+
+        <h3>Поиск и замена</h3>
+        <ul>
+          <li>Найти далее (циклически)</li>
+          <li>Заменить текущее вхождение / заменить все</li>
+          <li>Счётчик совпадений <code>N / M</code></li>
+        </ul>
+      </section>
+
+      <section class="about-section">
+        <h2>Горячие клавиши</h2>
+        <p>Работают по <code>event.code</code> (не зависят от раскладки клавиатуры). На macOS вместо <code>Ctrl</code> используется <code>Cmd</code>.</p>
+        <table class="about-table">
+          <thead><tr><th>Клавиши</th><th>Действие</th></tr></thead>
+          <tbody>
+            <tr><td><code>Ctrl+B</code></td><td>Жирный</td></tr>
+            <tr><td><code>Ctrl+I</code></td><td>Курсив</td></tr>
+            <tr><td><code>Ctrl+S</code></td><td>Сохранить</td></tr>
+            <tr><td><code>Ctrl+Shift+S</code></td><td>Сохранить как&hellip;</td></tr>
+            <tr><td><code>Ctrl+F</code></td><td>Фокус в поле поиска</td></tr>
+            <tr><td><code>Ctrl+H</code></td><td>Фокус в поле замены</td></tr>
+            <tr><td><code>Ctrl+T</code></td><td>Новая вкладка</td></tr>
+            <tr><td><code>Ctrl+W</code></td><td>Закрыть вкладку</td></tr>
+            <tr><td><code>Ctrl+Z</code></td><td>Отменить</td></tr>
+            <tr><td><code>Ctrl+Y</code> / <code>Ctrl+Shift+Z</code></td><td>Повторить</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="about-section">
+        <h2>Стек</h2>
+        <table class="about-table">
+          <thead><tr><th>Компонент</th><th>Технология</th></tr></thead>
+          <tbody>
+            <tr><td>Сборка / dev-сервер</td><td>Vite 8</td></tr>
+            <tr><td>UI</td><td>HTML + CSS + vanilla JS</td></tr>
+            <tr><td>Markdown &rarr; HTML</td><td>marked</td></tr>
+            <tr><td>Экспорт Word</td><td>docx</td></tr>
+            <tr><td>Десктоп</td><td>Tauri 2 (Rust)</td></tr>
+            <tr><td>Диалоги файлов (Tauri)</td><td>rfd</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="about-section">
+        <h2>Требования</h2>
+        <ul>
+          <li><strong>Node.js</strong> 18+ (рекомендуется LTS)</li>
+          <li>Для десктопа (Tauri): <a href="https://www.rust-lang.org/tools/install" target="_blank" rel="noopener" style="color: var(--accent-hover);">Rust</a> и зависимости Tauri для Windows</li>
+        </ul>
+      </section>
+
+      <section class="about-section">
+        <h2>Установка и запуск</h2>
+        <pre><code>npm install</code></pre>
+        <p><strong>Веб (браузер):</strong></p>
+        <pre><code>npm run dev</code></pre>
+        <p><strong>Десктоп (Tauri):</strong></p>
+        <pre><code>npm run tauri:dev</code></pre>
+      </section>
+
+      <section class="about-section">
+        <h2>Лицензия</h2>
+        <p><a href="https://github.com/neuromafka-create/MD-Editor/blob/master/LICENSE" target="_blank" rel="noopener" style="color: var(--accent-hover);">MIT</a> &mdash; используйте свободно.</p>
+      </section>
+
+      <div class="about-links" style="justify-content: center; margin-top: 40px;">
+        <a href="/" class="primary">Открыть MD Editor</a>
+        <a href="https://github.com/neuromafka-create/MD-Editor" target="_blank" rel="noopener">GitHub &rarr;</a>
+      </div>
+    </div>
+  </body>
+</html>
