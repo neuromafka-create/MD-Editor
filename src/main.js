@@ -884,28 +884,26 @@ function applyInlineFormat(markdownInput, previewOutput, marker, placeholder = '
   recordHistory(markdownInput);
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const value = markdownInput.value;
+  const m = marker.length;
 
-  // Check if cursor is inside marker-wrapped text (no selection case)
-  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
-  const afterMarkers = value.slice(end, end + marker.length);
+  // Try to find enclosing markers around the selection/caret
+  const selStart = Math.min(start, end);
+  const selEnd = Math.max(start, end);
+  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
+  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
-    // Toggle OFF: selected text is wrapped
-    const inner = selected.slice(marker.length, selected.length - marker.length);
-    markdownInput.value = `${before}${inner}${after}`;
-    markdownInput.setSelectionRange(start, start + inner.length);
-  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
-    // Toggle OFF: cursor is between markers
-    const innerStart = start - marker.length;
-    const innerEnd = end + marker.length;
+  if (beforeSlice === marker && afterSlice === marker) {
+    // Toggle OFF: remove surrounding markers
+    const innerStart = selStart - m;
+    const innerEnd = selEnd + m;
     const inner = value.slice(innerStart, innerEnd);
     markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
-    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
+    markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     // Toggle ON: wrap with marker
     const text = selected || placeholder;
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    const selectionStart = start + marker.length;
+    const selectionStart = start + m;
     const selectionEnd = selectionStart + text.length;
     markdownInput.setSelectionRange(selectionStart, selectionEnd);
   }
@@ -918,25 +916,22 @@ function applyInlineCode(markdownInput, previewOutput) {
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '`';
   const value = markdownInput.value;
-  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
-  const afterMarkers = value.slice(end, end + marker.length);
+  const m = marker.length;
+  const selStart = Math.min(start, end);
+  const selEnd = Math.max(start, end);
+  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
+  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
-    const inner = selected.slice(marker.length, selected.length - marker.length);
-    markdownInput.value = `${before}${inner}${after}`;
-    markdownInput.setSelectionRange(start, start + inner.length);
-  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
-    const innerStart = start - marker.length;
-    const innerEnd = end + marker.length;
+  if (beforeSlice === marker && afterSlice === marker) {
+    const innerStart = selStart - m;
+    const innerEnd = selEnd + m;
     const inner = value.slice(innerStart, innerEnd);
     markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
-    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
+    markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'код';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    const selectionStart = start + marker.length;
-    const selectionEnd = selectionStart + text.length;
-    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+    markdownInput.setSelectionRange(start + m, start + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
@@ -955,25 +950,22 @@ function applyStrikethrough(markdownInput, previewOutput) {
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '~~';
   const value = markdownInput.value;
-  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
-  const afterMarkers = value.slice(end, end + marker.length);
+  const m = marker.length;
+  const selStart = Math.min(start, end);
+  const selEnd = Math.max(start, end);
+  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
+  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
-    const inner = selected.slice(marker.length, selected.length - marker.length);
-    markdownInput.value = `${before}${inner}${after}`;
-    markdownInput.setSelectionRange(start, start + inner.length);
-  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
-    const innerStart = start - marker.length;
-    const innerEnd = end + marker.length;
+  if (beforeSlice === marker && afterSlice === marker) {
+    const innerStart = selStart - m;
+    const innerEnd = selEnd + m;
     const inner = value.slice(innerStart, innerEnd);
     markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
-    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
+    markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    const selectionStart = start + marker.length;
-    const selectionEnd = selectionStart + text.length;
-    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+    markdownInput.setSelectionRange(start + m, start + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
@@ -984,25 +976,22 @@ function applyHighlight(markdownInput, previewOutput) {
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '==';
   const value = markdownInput.value;
-  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
-  const afterMarkers = value.slice(end, end + marker.length);
+  const m = marker.length;
+  const selStart = Math.min(start, end);
+  const selEnd = Math.max(start, end);
+  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
+  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
-    const inner = selected.slice(marker.length, selected.length - marker.length);
-    markdownInput.value = `${before}${inner}${after}`;
-    markdownInput.setSelectionRange(start, start + inner.length);
-  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
-    const innerStart = start - marker.length;
-    const innerEnd = end + marker.length;
+  if (beforeSlice === marker && afterSlice === marker) {
+    const innerStart = selStart - m;
+    const innerEnd = selEnd + m;
     const inner = value.slice(innerStart, innerEnd);
     markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
-    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
+    markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    const selectionStart = start + marker.length;
-    const selectionEnd = selectionStart + text.length;
-    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+    markdownInput.setSelectionRange(start + m, start + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
