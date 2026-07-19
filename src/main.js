@@ -496,10 +496,15 @@ function addCopyButtonsToCodeBlocks(previewOutput) {
   const codeBlocks = previewOutput.querySelectorAll('pre');
   codeBlocks.forEach((pre) => {
     const code = pre.querySelector('code');
-    if (code) {
+    if (code && !pre.querySelector('.code-lang-label')) {
       const cls = code.className || '';
       const match = cls.match(/language-(\S+)/);
-      if (match) pre.setAttribute('data-lang', match[1]);
+      if (match) {
+        const label = document.createElement('span');
+        label.className = 'code-lang-label';
+        label.textContent = match[1];
+        pre.appendChild(label);
+      }
     }
     if (!pre.querySelector('.copy-code-button')) {
       pre.classList.add('has-copy-button');

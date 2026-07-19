@@ -1043,11 +1043,10 @@ body[data-theme='light'] .preview-output pre {
 }
 
 .preview-output pre code[class^="language-"] {
-  padding-top: 2em;
+  padding-top: 0;
 }
 
-.preview-output pre[data-lang]::after {
-  content: attr(data-lang);
+.code-lang-label {
   position: absolute;
   top: 6px;
   right: 10px;
@@ -1063,6 +1062,7 @@ body[data-theme='light'] .preview-output pre {
   border-radius: 4px;
   border: 1px solid var(--border);
   line-height: 1;
+  z-index: 1;
 }
 
 .preview-output pre.has-copy-button {
