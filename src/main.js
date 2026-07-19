@@ -885,19 +885,39 @@ function applyInlineFormat(markdownInput, previewOutput, marker, placeholder = '
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const value = markdownInput.value;
   const m = marker.length;
-
-  // Try to find enclosing markers around the selection/caret
   const selStart = Math.min(start, end);
   const selEnd = Math.max(start, end);
-  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
-  const afterSlice = value.slice(selEnd, selEnd + m);
+  const ch = marker[0]; // '*' or '`' or '~' or '='
 
-  if (beforeSlice === marker && afterSlice === marker) {
-    // Toggle OFF: remove surrounding markers
-    const innerStart = selStart - m;
-    const innerEnd = selEnd + m;
-    const inner = value.slice(innerStart, innerEnd);
-    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+  // Search backwards from selStart: find opening marker
+  let openIdx = -1;
+  for (let i = selStart - 1; i >= m - 1; i--) {
+    if (value.slice(i - m + 1, i + 1) === marker) {
+      // Not part of a longer run of the same char
+      if (value[i - m] !== ch && value[i + 1] !== ch) {
+        openIdx = i - m + 1;
+        break;
+      }
+    }
+  }
+
+  // Search forwards from selEnd: find closing marker
+  let closeIdx = -1;
+  if (openIdx !== -1) {
+    for (let i = selEnd; i <= value.length - m; i++) {
+      if (value.slice(i, i + m) === marker) {
+        if (value[i - 1] !== ch && value[i + m] !== ch) {
+          closeIdx = i;
+          break;
+        }
+      }
+    }
+  }
+
+  if (openIdx !== -1 && closeIdx !== -1) {
+    // Toggle OFF: remove markers
+    const inner = value.slice(openIdx + m, closeIdx);
+    markdownInput.value = value.slice(0, openIdx) + inner + value.slice(closeIdx + m);
     markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     // Toggle ON: wrap with marker
@@ -917,16 +937,35 @@ function applyInlineCode(markdownInput, previewOutput) {
   const marker = '`';
   const value = markdownInput.value;
   const m = marker.length;
+  const ch = marker[0];
   const selStart = Math.min(start, end);
   const selEnd = Math.max(start, end);
-  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
-  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (beforeSlice === marker && afterSlice === marker) {
-    const innerStart = selStart - m;
-    const innerEnd = selEnd + m;
-    const inner = value.slice(innerStart, innerEnd);
-    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+  let openIdx = -1;
+  for (let i = selStart - 1; i >= m - 1; i--) {
+    if (value.slice(i - m + 1, i + 1) === marker) {
+      if (value[i - m] !== ch && value[i + 1] !== ch) {
+        openIdx = i - m + 1;
+        break;
+      }
+    }
+  }
+
+  let closeIdx = -1;
+  if (openIdx !== -1) {
+    for (let i = selEnd; i <= value.length - m; i++) {
+      if (value.slice(i, i + m) === marker) {
+        if (value[i - 1] !== ch && value[i + m] !== ch) {
+          closeIdx = i;
+          break;
+        }
+      }
+    }
+  }
+
+  if (openIdx !== -1 && closeIdx !== -1) {
+    const inner = value.slice(openIdx + m, closeIdx);
+    markdownInput.value = value.slice(0, openIdx) + inner + value.slice(closeIdx + m);
     markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'код';
@@ -951,16 +990,35 @@ function applyStrikethrough(markdownInput, previewOutput) {
   const marker = '~~';
   const value = markdownInput.value;
   const m = marker.length;
+  const ch = marker[0];
   const selStart = Math.min(start, end);
   const selEnd = Math.max(start, end);
-  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
-  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (beforeSlice === marker && afterSlice === marker) {
-    const innerStart = selStart - m;
-    const innerEnd = selEnd + m;
-    const inner = value.slice(innerStart, innerEnd);
-    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+  let openIdx = -1;
+  for (let i = selStart - 1; i >= m - 1; i--) {
+    if (value.slice(i - m + 1, i + 1) === marker) {
+      if (value[i - m] !== ch && value[i + 1] !== ch) {
+        openIdx = i - m + 1;
+        break;
+      }
+    }
+  }
+
+  let closeIdx = -1;
+  if (openIdx !== -1) {
+    for (let i = selEnd; i <= value.length - m; i++) {
+      if (value.slice(i, i + m) === marker) {
+        if (value[i - 1] !== ch && value[i + m] !== ch) {
+          closeIdx = i;
+          break;
+        }
+      }
+    }
+  }
+
+  if (openIdx !== -1 && closeIdx !== -1) {
+    const inner = value.slice(openIdx + m, closeIdx);
+    markdownInput.value = value.slice(0, openIdx) + inner + value.slice(closeIdx + m);
     markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'текст';
@@ -977,16 +1035,35 @@ function applyHighlight(markdownInput, previewOutput) {
   const marker = '==';
   const value = markdownInput.value;
   const m = marker.length;
+  const ch = marker[0];
   const selStart = Math.min(start, end);
   const selEnd = Math.max(start, end);
-  const beforeSlice = value.slice(Math.max(0, selStart - m), selStart);
-  const afterSlice = value.slice(selEnd, selEnd + m);
 
-  if (beforeSlice === marker && afterSlice === marker) {
-    const innerStart = selStart - m;
-    const innerEnd = selEnd + m;
-    const inner = value.slice(innerStart, innerEnd);
-    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+  let openIdx = -1;
+  for (let i = selStart - 1; i >= m - 1; i--) {
+    if (value.slice(i - m + 1, i + 1) === marker) {
+      if (value[i - m] !== ch && value[i + 1] !== ch) {
+        openIdx = i - m + 1;
+        break;
+      }
+    }
+  }
+
+  let closeIdx = -1;
+  if (openIdx !== -1) {
+    for (let i = selEnd; i <= value.length - m; i++) {
+      if (value.slice(i, i + m) === marker) {
+        if (value[i - 1] !== ch && value[i + m] !== ch) {
+          closeIdx = i;
+          break;
+        }
+      }
+    }
+  }
+
+  if (openIdx !== -1 && closeIdx !== -1) {
+    const inner = value.slice(openIdx + m, closeIdx);
+    markdownInput.value = value.slice(0, openIdx) + inner + value.slice(closeIdx + m);
     markdownInput.setSelectionRange(selStart, selEnd);
   } else {
     const text = selected || 'текст';
