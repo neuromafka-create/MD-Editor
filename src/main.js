@@ -501,13 +501,14 @@ function addCopyButtonsToCodeBlocks(previewOutput) {
       const match = cls.match(/language-(\S+)/);
       if (match) pre.setAttribute('data-lang', match[1]);
     }
-    if (pre.querySelector('.copy-code-button')) return;
-    pre.classList.add('has-copy-button');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'copy-code-button';
-    button.textContent = 'Copy';
-    pre.insertBefore(button, pre.firstChild);
+    if (!pre.querySelector('.copy-code-button')) {
+      pre.classList.add('has-copy-button');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy-code-button';
+      button.textContent = 'Copy';
+      pre.insertBefore(button, pre.firstChild);
+    }
   });
 }
 

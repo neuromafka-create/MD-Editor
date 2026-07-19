@@ -1055,10 +1055,14 @@ body[data-theme='light'] .preview-output pre {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-secondary);
-  opacity: 0.55;
   pointer-events: none;
   font-family: var(--font-mono);
   text-transform: uppercase;
+  background: var(--surface-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  line-height: 1;
 }
 
 .preview-output pre.has-copy-button {
