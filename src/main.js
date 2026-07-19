@@ -881,11 +881,42 @@ function replaceSelection(markdownInput, previewOutput, beforeText, afterText, p
 }
 
 function applyInlineFormat(markdownInput, previewOutput, marker, placeholder = 'текст') {
-  replaceSelection(markdownInput, previewOutput, marker, marker, placeholder);
+  recordHistory(markdownInput);
+  const { start, end, before, selected, after } = getSelectionData(markdownInput);
+  const text = selected || placeholder;
+
+  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
+    const inner = selected.slice(marker.length, selected.length - marker.length);
+    markdownInput.value = `${before}${inner}${after}`;
+    markdownInput.setSelectionRange(start, start + inner.length);
+  } else {
+    markdownInput.value = `${before}${marker}${text}${marker}${after}`;
+    const selectionStart = start + marker.length;
+    const selectionEnd = selectionStart + text.length;
+    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+  }
+  afterEdit(markdownInput, previewOutput);
+  markdownInput.focus();
 }
 
 function applyInlineCode(markdownInput, previewOutput) {
-  replaceSelection(markdownInput, previewOutput, '`', '`', 'код');
+  recordHistory(markdownInput);
+  const { start, end, before, selected, after } = getSelectionData(markdownInput);
+  const marker = '`';
+  const text = selected || 'код';
+
+  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
+    const inner = selected.slice(marker.length, selected.length - marker.length);
+    markdownInput.value = `${before}${inner}${after}`;
+    markdownInput.setSelectionRange(start, start + inner.length);
+  } else {
+    markdownInput.value = `${before}${marker}${text}${marker}${after}`;
+    const selectionStart = start + marker.length;
+    const selectionEnd = selectionStart + text.length;
+    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+  }
+  afterEdit(markdownInput, previewOutput);
+  markdownInput.focus();
 }
 
 function applySuperscript(markdownInput, previewOutput) {
@@ -897,11 +928,43 @@ function applySubscript(markdownInput, previewOutput) {
 }
 
 function applyStrikethrough(markdownInput, previewOutput) {
-  replaceSelection(markdownInput, previewOutput, '~~', '~~', 'текст');
+  recordHistory(markdownInput);
+  const { start, end, before, selected, after } = getSelectionData(markdownInput);
+  const marker = '~~';
+  const text = selected || 'текст';
+
+  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
+    const inner = selected.slice(marker.length, selected.length - marker.length);
+    markdownInput.value = `${before}${inner}${after}`;
+    markdownInput.setSelectionRange(start, start + inner.length);
+  } else {
+    markdownInput.value = `${before}${marker}${text}${marker}${after}`;
+    const selectionStart = start + marker.length;
+    const selectionEnd = selectionStart + text.length;
+    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+  }
+  afterEdit(markdownInput, previewOutput);
+  markdownInput.focus();
 }
 
 function applyHighlight(markdownInput, previewOutput) {
-  replaceSelection(markdownInput, previewOutput, '==', '==', 'текст');
+  recordHistory(markdownInput);
+  const { start, end, before, selected, after } = getSelectionData(markdownInput);
+  const marker = '==';
+  const text = selected || 'текст';
+
+  if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
+    const inner = selected.slice(marker.length, selected.length - marker.length);
+    markdownInput.value = `${before}${inner}${after}`;
+    markdownInput.setSelectionRange(start, start + inner.length);
+  } else {
+    markdownInput.value = `${before}${marker}${text}${marker}${after}`;
+    const selectionStart = start + marker.length;
+    const selectionEnd = selectionStart + text.length;
+    markdownInput.setSelectionRange(selectionStart, selectionEnd);
+  }
+  afterEdit(markdownInput, previewOutput);
+  markdownInput.focus();
 }
 
 function applyTaskList(markdownInput, previewOutput) {
