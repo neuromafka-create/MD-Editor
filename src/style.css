@@ -1049,7 +1049,7 @@ body[data-theme='light'] .preview-output pre {
 .code-lang-label {
   position: absolute;
   top: 6px;
-  right: 10px;
+  left: 10px;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.02em;
