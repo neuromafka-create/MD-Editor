@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "version:sync": "node -e \"const p=require('./package.json'); const t=require('./src-tauri/tauri.conf.json'); t.version=p.version; require('fs').writeFileSync('src-tauri/tauri.conf.json', JSON.stringify(t, null, 2)+'\\n')\"",
+    "version:bump": "node -e \"const v=process.argv[1]; if(!v){console.error('Usage: npm run version:bump <patch|minor|major|X.Y.Z>');process.exit(1)} const fs=require('fs'); const p=JSON.parse(fs.readFileSync('package.json','utf8')); const parts=p.version.split('.'); if(v==='patch')parts[2]++;else if(v==='minor'){parts[2]=0;parts[1]++}else if(v==='major'){parts[2]=0;parts[1]=0;parts[0]++}else if(/^\\d+\\.\\d+\\.\\d+$/.test(v)){const nv=v.split('.'); p.version=nv.join('.')}else{console.error('Invalid version:',v);process.exit(1)} if(!/^\\d+\\.\\d+\\.\\d+$/.test(v))p.version=parts.join('.'); fs.writeFileSync('package.json',JSON.stringify(p,null,2)+'\\n'); console.log('Bumped to',p.version)\"",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "npm run version:sync && tauri build"
   },
   "keywords": ["markdown", "editor", "tauri", "preview", "docx"],
   "author": "NeuroMafka",

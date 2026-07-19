@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "MD Editor",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "identifier": "com.mdeditor.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -23,12 +23,16 @@
     ],
     "security": {
       "csp": null,
-      "capabilities": ["default"]
+      "capabilities": [
+        "default"
+      ]
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -48,7 +52,10 @@
       "nsis": {
         "installMode": "both",
         "displayLanguageSelector": false,
-        "languages": ["English", "Russian"],
+        "languages": [
+          "English",
+          "Russian"
+        ],
         "startMenuFolder": "MD Editor"
       }
     }
