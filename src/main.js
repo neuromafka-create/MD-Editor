@@ -883,13 +883,27 @@ function replaceSelection(markdownInput, previewOutput, beforeText, afterText, p
 function applyInlineFormat(markdownInput, previewOutput, marker, placeholder = 'текст') {
   recordHistory(markdownInput);
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
-  const text = selected || placeholder;
+  const value = markdownInput.value;
+
+  // Check if cursor is inside marker-wrapped text (no selection case)
+  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
+  const afterMarkers = value.slice(end, end + marker.length);
 
   if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
+    // Toggle OFF: selected text is wrapped
     const inner = selected.slice(marker.length, selected.length - marker.length);
     markdownInput.value = `${before}${inner}${after}`;
     markdownInput.setSelectionRange(start, start + inner.length);
+  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
+    // Toggle OFF: cursor is between markers
+    const innerStart = start - marker.length;
+    const innerEnd = end + marker.length;
+    const inner = value.slice(innerStart, innerEnd);
+    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
   } else {
+    // Toggle ON: wrap with marker
+    const text = selected || placeholder;
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
     const selectionStart = start + marker.length;
     const selectionEnd = selectionStart + text.length;
@@ -903,13 +917,22 @@ function applyInlineCode(markdownInput, previewOutput) {
   recordHistory(markdownInput);
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '`';
-  const text = selected || 'код';
+  const value = markdownInput.value;
+  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
+  const afterMarkers = value.slice(end, end + marker.length);
 
   if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
     const inner = selected.slice(marker.length, selected.length - marker.length);
     markdownInput.value = `${before}${inner}${after}`;
     markdownInput.setSelectionRange(start, start + inner.length);
+  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
+    const innerStart = start - marker.length;
+    const innerEnd = end + marker.length;
+    const inner = value.slice(innerStart, innerEnd);
+    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
   } else {
+    const text = selected || 'код';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
     const selectionStart = start + marker.length;
     const selectionEnd = selectionStart + text.length;
@@ -931,13 +954,22 @@ function applyStrikethrough(markdownInput, previewOutput) {
   recordHistory(markdownInput);
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '~~';
-  const text = selected || 'текст';
+  const value = markdownInput.value;
+  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
+  const afterMarkers = value.slice(end, end + marker.length);
 
   if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
     const inner = selected.slice(marker.length, selected.length - marker.length);
     markdownInput.value = `${before}${inner}${after}`;
     markdownInput.setSelectionRange(start, start + inner.length);
+  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
+    const innerStart = start - marker.length;
+    const innerEnd = end + marker.length;
+    const inner = value.slice(innerStart, innerEnd);
+    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
   } else {
+    const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
     const selectionStart = start + marker.length;
     const selectionEnd = selectionStart + text.length;
@@ -951,13 +983,22 @@ function applyHighlight(markdownInput, previewOutput) {
   recordHistory(markdownInput);
   const { start, end, before, selected, after } = getSelectionData(markdownInput);
   const marker = '==';
-  const text = selected || 'текст';
+  const value = markdownInput.value;
+  const beforeMarkers = value.slice(Math.max(0, start - marker.length), start);
+  const afterMarkers = value.slice(end, end + marker.length);
 
   if (selected && selected.startsWith(marker) && selected.endsWith(marker) && selected.length > marker.length * 2) {
     const inner = selected.slice(marker.length, selected.length - marker.length);
     markdownInput.value = `${before}${inner}${after}`;
     markdownInput.setSelectionRange(start, start + inner.length);
+  } else if (!selected && beforeMarkers === marker && afterMarkers === marker) {
+    const innerStart = start - marker.length;
+    const innerEnd = end + marker.length;
+    const inner = value.slice(innerStart, innerEnd);
+    markdownInput.value = value.slice(0, innerStart) + inner + value.slice(innerEnd);
+    markdownInput.setSelectionRange(innerStart, innerStart + inner.length);
   } else {
+    const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
     const selectionStart = start + marker.length;
     const selectionEnd = selectionStart + text.length;
