@@ -7,15 +7,19 @@ marked.use({
   extensions: [{
     name: 'highlight',
     level: 'inline',
-    start(src) { return src.match(/==/)?.index; },
+    start(src) { return src.indexOf('=='); },
     tokenizer(src) {
       const match = src.match(/^==([^=]+)==/);
       if (match) {
-        return { type: 'highlight', raw: match[0], text: match[1] };
+        return {
+          type: 'highlight',
+          raw: match[0],
+          tokens: this.lexer.inlineTokens(match[1])
+        };
       }
     },
     renderer(token) {
-      return `<mark>${this.parser.parseInline(token.text)}</mark>`;
+      return `<mark>${this.parser.parseInline(token.tokens)}</mark>`;
     }
   }]
 });
