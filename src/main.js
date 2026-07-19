@@ -3,13 +3,40 @@ import { marked } from 'marked';
 import { markdownToDocxBytes } from './exportDocx.js';
 import { extractHeadings, insertOrUpdateToc, findTocRange } from './toc.js';
 
+marked.use({
+  extensions: [{
+    name: 'highlight',
+    level: 'inline',
+    start(src) { return src.match(/==/)?.index; },
+    tokenizer(src) {
+      const match = src.match(/^==([^=]+)==/);
+      if (match) {
+        return { type: 'highlight', raw: match[0], text: match[1] };
+      }
+    },
+    renderer(token) {
+      return `<mark>${this.parser.parseInline(token.text)}</mark>`;
+    }
+  }]
+});
+
 const DEFAULT_CONTENT = '# Заголовок\n\nНачните писать...';
 const DEFAULT_TITLE = 'Новый';
 const MAX_HISTORY = 100;
+const SESSION_KEY = 'md-editor-session';
+const AUTOSAVE_INTERVAL = 3000;
 
 /** @type {{ id: string, title: string, content: string, dirty: boolean, filePath: string|null, fileHandle: FileSystemFileHandle|null, history: object[], redoStack: object[], selectionStart: number, selectionEnd: number, scrollTop: number }[]} */
 let tabs = [];
 let activeTabId = null;
+let autosaveTimer = null;
+const tabUsageOrder = [];
+
+function trackTabUsage(id) {
+  const idx = tabUsageOrder.indexOf(id);
+  if (idx !== -1) tabUsageOrder.splice(idx, 1);
+  tabUsageOrder.push(id);
+}
 
 const MARKDOWN_ACCEPT = {
   'text/markdown': ['.md', '.markdown', '.mdown'],
@@ -38,6 +65,59 @@ function createTabState(content = DEFAULT_CONTENT, title = DEFAULT_TITLE) {
     selectionEnd: 0,
     scrollTop: 0
   };
+}
+
+/* ——— Session autosave / restore ——— */
+function saveSession() {
+  const serializable = tabs.map((tab) => ({
+    id: tab.id,
+    title: tab.title,
+    content: tab.content,
+    dirty: tab.dirty,
+    filePath: tab.filePath,
+    selectionStart: tab.selectionStart,
+    selectionEnd: tab.selectionEnd,
+    scrollTop: tab.scrollTop
+  }));
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ tabs: serializable, activeTabId }));
+  } catch {
+    // localStorage full — silently ignore
+  }
+}
+
+function restoreSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (!data?.tabs?.length) return false;
+
+    tabs = data.tabs.map((saved) => {
+      const tab = createTabState(saved.content, saved.title);
+      tab.id = saved.id;
+      tab.dirty = saved.dirty;
+      tab.filePath = saved.filePath;
+      tab.selectionStart = saved.selectionStart || 0;
+      tab.selectionEnd = saved.selectionEnd || 0;
+      tab.scrollTop = saved.scrollTop || 0;
+      ensureHistorySeed(tab, tab.content);
+      return tab;
+    });
+    activeTabId = data.activeTabId || tabs[0]?.id || null;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function scheduleAutosave() {
+  if (autosaveTimer) clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(() => {
+    const markdownInput = document.getElementById('markdownInput');
+    if (markdownInput) persistActiveTabFromEditor(markdownInput);
+    saveSession();
+  }, AUTOSAVE_INTERVAL);
 }
 
 function isTauriRuntime() {
@@ -483,6 +563,7 @@ function markDirty(markdownInput) {
     renderTabs();
     updateTitle();
   }
+  scheduleAutosave();
 }
 
 function refreshEditorUi(markdownInput, previewOutput) {
@@ -809,6 +890,26 @@ function applySuperscript(markdownInput, previewOutput) {
 
 function applySubscript(markdownInput, previewOutput) {
   replaceSelection(markdownInput, previewOutput, '<sub>', '</sub>', 'текст');
+}
+
+function applyStrikethrough(markdownInput, previewOutput) {
+  replaceSelection(markdownInput, previewOutput, '~~', '~~', 'текст');
+}
+
+function applyHighlight(markdownInput, previewOutput) {
+  replaceSelection(markdownInput, previewOutput, '==', '==', 'текст');
+}
+
+function applyTaskList(markdownInput, previewOutput) {
+  recordHistory(markdownInput);
+  const { start, before, selected, after } = getSelectionData(markdownInput);
+  const content = selected || 'задача';
+  const lines = content.split('\n');
+  const formatted = lines.map((line) => `- [ ] ${line.replace(/^[-*]\s*\[.\]\s*/, '')}`).join('\n');
+  markdownInput.value = `${before}${formatted}${after}`;
+  markdownInput.setSelectionRange(start, start + formatted.length);
+  afterEdit(markdownInput, previewOutput);
+  markdownInput.focus();
 }
 
 function isInsideHtmlTag(text, start, end, tagName) {
@@ -1139,6 +1240,7 @@ function renderTabs() {
     element.addEventListener('click', (event) => {
       if (event.target === close || close.contains(event.target)) return;
       activateTab(tab.id);
+      trackTabUsage(tab.id);
     });
 
     const closeTab = (event) => {
@@ -1211,6 +1313,7 @@ function openNewTab(
   ensureHistorySeed(tab, content);
   tabs.push(tab);
   activeTabId = tab.id;
+  trackTabUsage(tab.id);
   renderTabs();
 
   const previewOutput = document.getElementById('previewOutput');
@@ -1653,7 +1756,25 @@ window.addEventListener('DOMContentLoaded', () => {
   setOutlineVisible(outlineVisible);
   initSplitPane();
 
-  openNewTab();
+  const restored = restoreSession();
+  if (restored) {
+    renderTabs();
+    const active = getActiveTab();
+    if (active && markdownInput && previewOutput) {
+      loadTabIntoEditor(active, markdownInput, previewOutput);
+      trackTabUsage(active.id);
+    }
+  } else {
+    openNewTab();
+  }
+
+  window.addEventListener('beforeunload', (event) => {
+    const hasDirty = tabs.some((tab) => tab.dirty);
+    if (hasDirty) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  });
 
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
@@ -1688,6 +1809,78 @@ window.addEventListener('DOMContentLoaded', () => {
   if (hrButton) hrButton.addEventListener('click', () => insertHorizontalRule(markdownInput, previewOutput));
   if (imageButton) imageButton.addEventListener('click', () => insertImage(markdownInput, previewOutput));
   if (linkButton) linkButton.addEventListener('click', () => insertLink(markdownInput, previewOutput));
+  if (document.getElementById('strikethroughButton')) {
+    document.getElementById('strikethroughButton').addEventListener('click', () => applyStrikethrough(markdownInput, previewOutput));
+  }
+  if (document.getElementById('highlightButton')) {
+    document.getElementById('highlightButton').addEventListener('click', () => applyHighlight(markdownInput, previewOutput));
+  }
+  if (document.getElementById('taskListButton')) {
+    document.getElementById('taskListButton').addEventListener('click', () => applyTaskList(markdownInput, previewOutput));
+  }
+
+  /* ——— View mode toggle ——— */
+  const viewModes = ['both', 'editor-only', 'preview-only'];
+  let viewModeIndex = 0;
+  const viewModeToggle = document.getElementById('viewModeToggle');
+  const splitPanes = document.getElementById('splitPanes');
+
+  function applyViewMode() {
+    if (!splitPanes) return;
+    splitPanes.classList.remove('view-editor-only', 'view-preview-only');
+    const mode = viewModes[viewModeIndex];
+    if (mode === 'editor-only') splitPanes.classList.add('view-editor-only');
+    else if (mode === 'preview-only') splitPanes.classList.add('view-preview-only');
+    if (viewModeToggle) {
+      const labels = { 'both': 'Вид', 'editor-only': 'Только ред.', 'preview-only': 'Только прев.' };
+      viewModeToggle.textContent = labels[mode] || 'Вид';
+    }
+    localStorage.setItem('md-editor-view-mode', String(viewModeIndex));
+  }
+
+  if (viewModeToggle) {
+    viewModeToggle.addEventListener('click', () => {
+      viewModeIndex = (viewModeIndex + 1) % viewModes.length;
+      applyViewMode();
+    });
+  }
+  const savedViewMode = parseInt(localStorage.getItem('md-editor-view-mode') || '0', 10);
+  if (savedViewMode >= 0 && savedViewMode < viewModes.length) viewModeIndex = savedViewMode;
+  applyViewMode();
+
+  /* ——— Fullscreen ——— */
+  const fullscreenButton = document.getElementById('fullscreenButton');
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+      document.body.classList.add('is-fullscreen');
+    } else {
+      document.exitFullscreen().catch(() => {});
+      document.body.classList.remove('is-fullscreen');
+    }
+  }
+  if (fullscreenButton) fullscreenButton.addEventListener('click', toggleFullscreen);
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) document.body.classList.remove('is-fullscreen');
+  });
+
+  /* ——— Auto-close brackets and quotes ——— */
+  const AUTO_CLOSE_MAP = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+  markdownInput.addEventListener('keydown', (event) => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    const close = AUTO_CLOSE_MAP[event.key];
+    if (!close) return;
+    const { start, end, selected } = getSelectionData(markdownInput);
+    if (selected) return;
+    event.preventDefault();
+    markdownInput.value = markdownInput.value.slice(0, start) + event.key + close + markdownInput.value.slice(end);
+    markdownInput.setSelectionRange(start + 1, start + 1);
+    scheduleAutosave();
+  });
+
+  /* ——— Ctrl+Tab: MRU tab switching ——— */
+  const originalActivateTab = activateTab;
+
   if (newButton) newButton.addEventListener('click', () => openNewTab());
   if (openButton) openButton.addEventListener('click', () => openFile());
   if (saveButton) saveButton.addEventListener('click', () => saveFile(markdownInput));
@@ -1764,10 +1957,29 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('keydown', async (event) => {
-    if (!event.ctrlKey && !event.metaKey) return;
-    const code = event.code;
     const target = event.target;
     const inSearchField = target === searchInput || target === replaceInput;
+
+    /* ——— Ctrl+Tab: MRU tab switching ——— */
+    if ((event.ctrlKey || event.metaKey) && event.code === 'Tab' && !inSearchField) {
+      event.preventDefault();
+      if (tabs.length > 1) {
+        const currentIdx = tabUsageOrder.indexOf(activeTabId);
+        const nextIdx = event.shiftKey
+          ? (currentIdx - 1 + tabUsageOrder.length) % tabUsageOrder.length
+          : (currentIdx + 1) % tabUsageOrder.length;
+        const nextId = tabUsageOrder[nextIdx];
+        if (nextId && nextId !== activeTabId) {
+          if (activeTabId) persistActiveTabFromEditor(markdownInput);
+          activateTab(nextId);
+          trackTabUsage(nextId);
+        }
+      }
+      return;
+    }
+
+    if (!event.ctrlKey && !event.metaKey) return;
+    const code = event.code;
 
     if (code === 'KeyB' && !inSearchField) {
       event.preventDefault();
@@ -1810,6 +2022,21 @@ window.addEventListener('DOMContentLoaded', () => {
     if ((code === 'KeyY' || (code === 'KeyZ' && event.shiftKey)) && !inSearchField) {
       event.preventDefault();
       redoEdit(markdownInput, previewOutput);
+    }
+    /* Strikethrough: Ctrl+Shift+X */
+    if (code === 'KeyX' && event.shiftKey && !inSearchField) {
+      event.preventDefault();
+      applyStrikethrough(markdownInput, previewOutput);
+    }
+    /* Highlight: Ctrl+Shift+H */
+    if (code === 'KeyH' && event.shiftKey && !inSearchField) {
+      event.preventDefault();
+      applyHighlight(markdownInput, previewOutput);
+    }
+    /* F11: fullscreen */
+    if (code === 'F11') {
+      event.preventDefault();
+      toggleFullscreen();
     }
   });
 

@@ -1095,6 +1095,81 @@ body[data-theme='light'] .preview-output pre {
   background: color-mix(in srgb, var(--surface-2) 40%, transparent);
 }
 
+/* ——— Strikethrough, Highlight, Task Lists ——— */
+.preview-output del,
+.preview-output s {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+
+.preview-output mark {
+  background: color-mix(in srgb, #eab308 35%, transparent);
+  color: inherit;
+  padding: 0.1em 0.25em;
+  border-radius: 3px;
+}
+
+.preview-output ul.contains-task-list {
+  list-style: none;
+  padding-left: 0.5em;
+}
+
+.preview-output .task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+  margin: 0.3em 0;
+}
+
+.preview-output .task-list-item input[type="checkbox"] {
+  margin-top: 0.35em;
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ——— Panel view modes ——— */
+.split-panes.view-editor-only .preview-panel,
+.split-panes.view-editor-only .split-gutter {
+  display: none;
+}
+
+.split-panes.view-editor-only .editor-panel {
+  flex: 1 1 100%;
+}
+
+.split-panes.view-preview-only .editor-panel,
+.split-panes.view-preview-only .split-gutter {
+  display: none;
+}
+
+.split-panes.view-preview-only .preview-panel {
+  flex: 1 1 100%;
+}
+
+/* ——— Fullscreen ——— */
+body.is-fullscreen .topbar {
+  display: none;
+}
+
+body.is-fullscreen .tools-row {
+  display: none;
+}
+
+body.is-fullscreen .editor-layout {
+  padding: 0;
+  gap: 0;
+}
+
+body.is-fullscreen .outline-panel {
+  display: none;
+}
+
+body.is-fullscreen .editor-layout.outline-collapsed {
+  grid-template-columns: 1fr;
+}
+
 /* ——— Scrollbars ——— */
 textarea#markdownInput,
 .preview-output,
