@@ -495,6 +495,12 @@ function addCopyButtonsToCodeBlocks(previewOutput) {
   if (!previewOutput) return;
   const codeBlocks = previewOutput.querySelectorAll('pre');
   codeBlocks.forEach((pre) => {
+    const code = pre.querySelector('code');
+    if (code) {
+      const cls = code.className || '';
+      const match = cls.match(/language-(\S+)/);
+      if (match) pre.setAttribute('data-lang', match[1]);
+    }
     if (pre.querySelector('.copy-code-button')) return;
     pre.classList.add('has-copy-button');
     const button = document.createElement('button');

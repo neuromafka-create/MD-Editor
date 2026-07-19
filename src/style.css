@@ -1042,6 +1042,25 @@ body[data-theme='light'] .preview-output pre {
   white-space: pre;
 }
 
+.preview-output pre code[class^="language-"] {
+  padding-top: 2em;
+}
+
+.preview-output pre[data-lang]::after {
+  content: attr(data-lang);
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  opacity: 0.55;
+  pointer-events: none;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
 .preview-output pre.has-copy-button {
   padding-top: 38px;
 }
