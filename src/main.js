@@ -2184,6 +2184,16 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    /* Alt+1..4: headings (before ctrl-only guard) */
+    if (event.altKey && !event.ctrlKey && !event.metaKey) {
+      const headingLevel = { '1': 1, '2': 2, '3': 3, '4': 4 }[event.key];
+      if (headingLevel) {
+        event.preventDefault();
+        applyHeading(markdownInput, previewOutput, headingLevel);
+        return;
+      }
+    }
+
     if (!event.ctrlKey && !event.metaKey) return;
     const code = event.code;
 
@@ -2262,14 +2272,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (code === 'F11') {
       event.preventDefault();
       toggleFullscreen();
-    }
-    /* Alt+1..4: headings */
-    if (event.altKey && !event.ctrlKey && !event.metaKey) {
-      const headingLevel = { Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4 }[code];
-      if (headingLevel) {
-        event.preventDefault();
-        applyHeading(markdownInput, previewOutput, headingLevel);
-      }
     }
   }, { capture: true });
 
