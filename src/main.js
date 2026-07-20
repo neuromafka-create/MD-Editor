@@ -2156,7 +2156,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.addEventListener('keydown', async (event) => {
+  document.addEventListener('keydown', (event) => {
     const target = event.target;
     const inSearchField = target === searchInput || target === replaceInput;
 
@@ -2258,7 +2258,7 @@ window.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       toggleFullscreen();
     }
-  });
+  }, { capture: true });
 
   const refreshCursorLine = () => {
     updateLineNumbers(markdownInput);
