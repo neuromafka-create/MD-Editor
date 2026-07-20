@@ -1406,3 +1406,53 @@ textarea#markdownInput::-webkit-scrollbar-thumb:hover,
     min-width: 100px;
   }
 }
+
+/* ——— Context menu ——— */
+.ctx-menu {
+  position: fixed;
+  z-index: 1000;
+  min-width: 180px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  display: none;
+}
+
+.ctx-menu.open {
+  display: block;
+}
+
+.ctx-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ctx-menu-item:hover {
+  background: var(--button-hover);
+}
+
+.ctx-menu-item .ctx-icon {
+  width: 20px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.ctx-menu-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 6px;
+}

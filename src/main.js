@@ -2297,4 +2297,66 @@ window.addEventListener('DOMContentLoaded', () => {
     const tab = getActiveTab();
     if (tab) tab.scrollTop = markdownInput.scrollTop;
   });
+
+  /* ——— Context menu ——— */
+  const ctxMenu = document.createElement('div');
+  ctxMenu.className = 'ctx-menu';
+  document.body.appendChild(ctxMenu);
+
+  const ctxItems = [
+    { icon: 'B', label: 'Жирный', action: () => applyInlineFormat(markdownInput, previewOutput, '**', 'жирный текст') },
+    { icon: 'I', label: 'Курсив', action: () => applyInlineFormat(markdownInput, previewOutput, '*', 'курсив') },
+    { icon: '<s>S</s>', label: 'Зачёркивание', action: () => applyStrikethrough(markdownInput, previewOutput) },
+    { icon: '<span style="background:#eab308;color:#000;padding:0 2px;border-radius:3px;font-size:11px">H</span>', label: 'Подсветка', action: () => applyHighlight(markdownInput, previewOutput) },
+    { icon: '`', label: 'Инлайн-код', action: () => applyInlineCode(markdownInput, previewOutput) },
+    { divider: true },
+    { icon: 'x²', label: 'Верхний индекс', action: () => applySuperscript(markdownInput, previewOutput) },
+    { icon: 'x₂', label: 'Нижний индекс', action: () => applySubscript(markdownInput, previewOutput) },
+    { divider: true },
+    { icon: '🔗', label: 'Ссылка', action: () => applyLink(markdownInput, previewOutput) },
+    { icon: '▣', label: 'Изображение', action: () => applyImage(markdownInput, previewOutput) },
+  ];
+
+  ctxItems.forEach((item) => {
+    if (item.divider) {
+      const div = document.createElement('div');
+      div.className = 'ctx-menu-divider';
+      ctxMenu.appendChild(div);
+      return;
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ctx-menu-item';
+    btn.innerHTML = `<span class="ctx-icon">${item.icon}</span><span>${item.label}</span>`;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeCtxMenu();
+      markdownInput.focus();
+      item.action();
+    });
+    ctxMenu.appendChild(btn);
+  });
+
+  function closeCtxMenu() {
+    ctxMenu.classList.remove('open');
+  }
+
+  markdownInput.addEventListener('contextmenu', (e) => {
+    const hasSelection = markdownInput.selectionStart !== markdownInput.selectionEnd;
+    if (!hasSelection) return;
+    e.preventDefault();
+    const x = Math.min(e.clientX, window.innerWidth - 200);
+    const y = Math.min(e.clientY, window.innerHeight - ctxMenu.children.length * 32 - 16);
+    ctxMenu.style.left = x + 'px';
+    ctxMenu.style.top = y + 'px';
+    ctxMenu.classList.add('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!ctxMenu.contains(e.target)) closeCtxMenu();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeCtxMenu();
+  });
 });
