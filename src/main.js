@@ -2263,6 +2263,14 @@ window.addEventListener('DOMContentLoaded', () => {
       event.preventDefault();
       toggleFullscreen();
     }
+    /* Alt+1..4: headings */
+    if (event.altKey && !event.ctrlKey && !event.metaKey) {
+      const headingLevel = { Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4 }[code];
+      if (headingLevel) {
+        event.preventDefault();
+        applyHeading(markdownInput, previewOutput, headingLevel);
+      }
+    }
   }, { capture: true });
 
   const refreshCursorLine = () => {
