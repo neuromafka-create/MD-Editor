@@ -1031,41 +1031,90 @@ body[data-theme='light'] .preview-output pre {
   background: var(--surface-2);
 }
 
-body[data-theme='light'] .preview-output pre code {
-  color: #24292e;
+body[data-theme='light'] .preview-output pre code,
+body[data-theme='light'] .preview-output pre .hljs {
+  color: #24292e !important;
 }
 
 body[data-theme='light'] .preview-output pre .hljs-comment,
 body[data-theme='light'] .preview-output pre .hljs-quote {
   color: #6a737d;
+  font-style: italic;
 }
 
 body[data-theme='light'] .preview-output pre .hljs-keyword,
-body[data-theme='light'] .preview-output pre .hljs-selector-tag {
+body[data-theme='light'] .preview-output pre .hljs-selector-tag,
+body[data-theme='light'] .preview-output pre .hljs-doctag,
+body[data-theme='light'] .preview-output pre .hljs-type {
   color: #d73a49;
 }
 
 body[data-theme='light'] .preview-output pre .hljs-string,
-body[data-theme='light'] .preview-output pre .hljs-attr {
+body[data-theme='light'] .preview-output pre .hljs-attr,
+body[data-theme='light'] .preview-output pre .hljs-template-variable,
+body[data-theme='light'] .preview-output pre .hljs-regexp,
+body[data-theme='light'] .preview-output pre .hljs-link {
   color: #032f62;
 }
 
 body[data-theme='light'] .preview-output pre .hljs-number,
-body[data-theme='light'] .preview-output pre .hljs-literal {
+body[data-theme='light'] .preview-output pre .hljs-literal,
+body[data-theme='light'] .preview-output pre .hljs-symbol,
+body[data-theme='light'] .preview-output pre .hljs-bullet {
   color: #005cc5;
 }
 
 body[data-theme='light'] .preview-output pre .hljs-function,
-body[data-theme='light'] .preview-output pre .hljs-title {
+body[data-theme='light'] .preview-output pre .hljs-title,
+body[data-theme='light'] .preview-output pre .hljs-title.function_ {
   color: #6f42c1;
 }
 
-body[data-theme='light'] .preview-output pre .hljs-built_in {
+body[data-theme='light'] .preview-output pre .hljs-built_in,
+body[data-theme='light'] .preview-output pre .hljs-section {
   color: #e36209;
 }
 
-body[data-theme='light'] .preview-output pre .hljs-variable {
+body[data-theme='light'] .preview-output pre .hljs-variable,
+body[data-theme='light'] .preview-output pre .hljs-params {
   color: #e36209;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-meta,
+body[data-theme='light'] .preview-output pre .hljs-meta .hljs-keyword {
+  color: #005cc5;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-tag,
+body[data-theme='light'] .preview-output pre .hljs-name {
+  color: #22863a;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-attribute {
+  color: #6f42c1;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-emphasis {
+  font-style: italic;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-strong {
+  font-weight: bold;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-addition {
+  color: #22863a;
+  background: #f0fff4;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-deletion {
+  color: #b31d28;
+  background: #ffeef0;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-selector-class,
+body[data-theme='light'] .preview-output pre .hljs-selector-attr {
+  color: #6f42c1;
 }
 
 .preview-output pre code {
@@ -1073,10 +1122,13 @@ body[data-theme='light'] .preview-output pre .hljs-variable {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--text);
   font-size: 0.88em;
   line-height: 1.55;
   white-space: pre;
+}
+
+.preview-output pre code:not([class]) {
+  color: var(--text);
 }
 
 .preview-output pre code[class^="language-"] {
