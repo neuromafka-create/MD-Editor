@@ -7,7 +7,12 @@ import {
   LevelFormat,
   Packer,
   Paragraph,
-  TextRun
+  Table,
+  TableRow,
+  TableCell,
+  TextRun,
+  WidthType,
+  VerticalAlign
 } from 'docx';
 import { marked } from 'marked';
 
@@ -249,28 +254,35 @@ function convertTokens(tokens, paragraphOptions = {}) {
         break;
       }
       case 'table': {
+        const rows = [];
         if (token.header?.length) {
-          children.push(new Paragraph({
-            children: [new TextRun({
-              text: token.header.map(cellText).join(' | '),
-              bold: true,
-              font: 'Consolas',
-              size: 20
-            })],
-            spacing: { after: 40 },
-            ...paragraphOptions
+          rows.push(new TableRow({
+            children: token.header.map((text) => new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: cellText({ text }), bold: true, font: 'Consolas', size: 20 })],
+                ...paragraphOptions
+              })],
+              verticalAlign: VerticalAlign.CENTER
+            })),
+            tableHeader: true
           }));
         }
         for (const row of token.rows || []) {
-          children.push(new Paragraph({
-            children: [new TextRun({
-              text: row.map(cellText).join(' | '),
-              font: 'Consolas',
-              size: 20
-            })],
-            spacing: { after: 40 },
-            ...paragraphOptions
+          rows.push(new TableRow({
+            children: row.map((text) => new TableCell({
+              children: [new Paragraph({
+                children: [new TextRun({ text: cellText({ text }), font: 'Consolas', size: 20 })],
+                ...paragraphOptions
+              })]
+            }))
           }));
+        }
+        if (rows.length) {
+          children.push(new Table({
+            rows,
+            width: { size: 100, type: WidthType.PERCENTAGE }
+          }));
+          children.push(new Paragraph({ spacing: { after: 200 } }));
         }
         break;
       }
