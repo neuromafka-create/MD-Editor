@@ -2163,6 +2163,7 @@ window.addEventListener('DOMContentLoaded', () => {
     /* ——— Ctrl+Tab: MRU tab switching ——— */
     if ((event.ctrlKey || event.metaKey) && event.code === 'Tab' && !inSearchField) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       if (tabs.length > 1) {
         const currentIdx = tabUsageOrder.indexOf(activeTabId);
         const nextIdx = event.shiftKey
@@ -2182,18 +2183,21 @@ window.addEventListener('DOMContentLoaded', () => {
     const code = event.code;
 
     /* ——— Ctrl+N: new tab (prevent browser new window) ——— */
-    if (code === 'KeyN' && !event.shiftKey && !inSearchField) {
+    if (code === 'KeyN' && !event.shiftKey) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       openNewTab();
       return;
     }
     /* ——— Ctrl+Shift+N / Ctrl+Shift+T: prevent browser behavior ——— */
     if (code === 'KeyN' && event.shiftKey) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       return;
     }
     if (code === 'KeyT' && event.shiftKey) {
       event.preventDefault();
+      event.stopImmediatePropagation();
       return;
     }
 
