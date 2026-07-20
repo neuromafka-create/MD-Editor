@@ -33,6 +33,7 @@
     "@tiptap/react": "^3.28.0",
     "@tiptap/starter-kit": "^3.28.0",
     "docx": "^9.7.1",
+    "highlight.js": "^11.11.1",
     "marked": "^18.0.6",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

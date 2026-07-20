@@ -1,5 +1,7 @@
 import './style.css';
+import 'highlight.js/styles/github-dark.css';
 import { marked } from 'marked';
+import hljs from 'highlight.js';
 import { markdownToDocxBytes } from './exportDocx.js';
 import { extractHeadings, insertOrUpdateToc, findTocRange } from './toc.js';
 
@@ -21,7 +23,19 @@ marked.use({
     renderer(token) {
       return `<mark>${this.parser.parseInline(token.tokens)}</mark>`;
     }
-  }]
+  }],
+  renderer: {
+    code({ text, lang }) {
+      const language = lang?.trim().split(/\s+/)[0] || '';
+      let highlighted;
+      if (language && hljs.getLanguage(language)) {
+        highlighted = hljs.highlight(text, { language }).value;
+      } else {
+        highlighted = hljs.highlightAuto(text).value;
+      }
+      return `<pre><code class="language-${language}">${highlighted}</code></pre>`;
+    }
+  }
 });
 
 const DEFAULT_CONTENT = '# Заголовок\n\nНачните писать...';

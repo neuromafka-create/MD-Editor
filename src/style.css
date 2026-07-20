@@ -1031,6 +1031,43 @@ body[data-theme='light'] .preview-output pre {
   background: var(--surface-2);
 }
 
+body[data-theme='light'] .preview-output pre code {
+  color: #24292e;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-comment,
+body[data-theme='light'] .preview-output pre .hljs-quote {
+  color: #6a737d;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-keyword,
+body[data-theme='light'] .preview-output pre .hljs-selector-tag {
+  color: #d73a49;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-string,
+body[data-theme='light'] .preview-output pre .hljs-attr {
+  color: #032f62;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-number,
+body[data-theme='light'] .preview-output pre .hljs-literal {
+  color: #005cc5;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-function,
+body[data-theme='light'] .preview-output pre .hljs-title {
+  color: #6f42c1;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-built_in {
+  color: #e36209;
+}
+
+body[data-theme='light'] .preview-output pre .hljs-variable {
+  color: #e36209;
+}
+
 .preview-output pre code {
   display: block;
   padding: 0;
