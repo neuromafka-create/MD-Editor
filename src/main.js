@@ -2182,12 +2182,24 @@ window.addEventListener('DOMContentLoaded', () => {
         if (!wrapper) return;
         const table = wrapper.querySelector('table');
         if (!table) return;
+        const html = table.outerHTML;
         const rows = [...table.querySelectorAll('tr')];
         const text = rows.map((row) => {
           const cells = [...row.querySelectorAll('th, td')];
           return cells.map((cell) => cell.textContent.trim()).join('\t');
         }).join('\n');
-        const success = await copyTextToClipboard(text);
+        let success = false;
+        if (navigator.clipboard?.write) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([html], { type: 'text/html' }),
+              'text/plain': new Blob([text], { type: 'text/plain' })
+            })
+          ]);
+          success = true;
+        } else {
+          success = await copyTextToClipboard(text);
+        }
         tableBtn.textContent = success ? 'Copied' : 'Copy';
         if (success) {
           setTimeout(() => { tableBtn.textContent = 'Copy'; }, 1200);
