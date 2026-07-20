@@ -1180,6 +1180,38 @@ body[data-theme='light'] .preview-output pre .hljs-selector-attr {
   background: var(--button-solid-hover);
 }
 
+.table-wrapper {
+  position: relative;
+}
+
+.copy-table-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  padding: 4px 9px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.table-wrapper:hover .copy-table-button {
+  opacity: 1;
+}
+
+.copy-table-button:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--button-solid-hover);
+}
+
 .preview-output table {
   width: 100%;
   border-collapse: collapse;

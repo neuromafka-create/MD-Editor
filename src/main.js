@@ -197,6 +197,7 @@ function renderPreview(markdownInput, previewOutput) {
   previewOutput.innerHTML = marked.parse(content);
   applyHeadingAnchors(previewOutput, content);
   addCopyButtonsToCodeBlocks(previewOutput);
+  addCopyButtonsToTables(previewOutput);
   enhancePreviewTocLinks(previewOutput);
 }
 
@@ -528,6 +529,29 @@ function addCopyButtonsToCodeBlocks(previewOutput) {
       button.className = 'copy-code-button';
       button.textContent = 'Copy';
       pre.insertBefore(button, pre.firstChild);
+    }
+  });
+}
+
+function addCopyButtonsToTables(previewOutput) {
+  if (!previewOutput) return;
+  const tables = previewOutput.querySelectorAll('table');
+  tables.forEach((table) => {
+    if (table.parentElement.querySelector('.copy-table-button')) return;
+    const wrapper = table.parentElement;
+    if (!wrapper.classList.contains('table-wrapper')) {
+      const div = document.createElement('div');
+      div.className = 'table-wrapper';
+      wrapper.insertBefore(div, table);
+      div.appendChild(table);
+    }
+    const container = table.parentElement;
+    if (!container.querySelector('.copy-table-button')) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'copy-table-button';
+      button.textContent = 'Copy';
+      container.appendChild(button);
     }
   });
 }
@@ -2145,18 +2169,35 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (previewOutput) {
     previewOutput.addEventListener('click', async (event) => {
-      const button = event.target.closest('.copy-code-button');
-      if (!(button instanceof HTMLButtonElement)) return;
-      const pre = button.closest('pre');
-      if (!pre) return;
-      const code = pre.querySelector('code');
-      if (!code) return;
-      const success = await copyTextToClipboard(code.innerText);
-      button.textContent = success ? 'Copied' : 'Copy';
-      if (success) {
-        setTimeout(() => {
-          button.textContent = 'Copy';
-        }, 1200);
+      const codeBtn = event.target.closest('.copy-code-button');
+      if (codeBtn instanceof HTMLButtonElement) {
+        const pre = codeBtn.closest('pre');
+        if (!pre) return;
+        const code = pre.querySelector('code');
+        if (!code) return;
+        const success = await copyTextToClipboard(code.innerText);
+        codeBtn.textContent = success ? 'Copied' : 'Copy';
+        if (success) {
+          setTimeout(() => { codeBtn.textContent = 'Copy'; }, 1200);
+        }
+        return;
+      }
+      const tableBtn = event.target.closest('.copy-table-button');
+      if (tableBtn instanceof HTMLButtonElement) {
+        const wrapper = tableBtn.closest('.table-wrapper');
+        if (!wrapper) return;
+        const table = wrapper.querySelector('table');
+        if (!table) return;
+        const rows = [...table.querySelectorAll('tr')];
+        const text = rows.map((row) => {
+          const cells = [...row.querySelectorAll('th, td')];
+          return cells.map((cell) => cell.textContent.trim()).join('\t');
+        }).join('\n');
+        const success = await copyTextToClipboard(text);
+        tableBtn.textContent = success ? 'Copied' : 'Copy';
+        if (success) {
+          setTimeout(() => { tableBtn.textContent = 'Copy'; }, 1200);
+        }
       }
     });
   }
