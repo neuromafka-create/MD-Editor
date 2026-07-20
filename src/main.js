@@ -897,10 +897,11 @@ function afterEdit(markdownInput, previewOutput) {
 
 function replaceSelection(markdownInput, previewOutput, beforeText, afterText, placeholder = 'текст') {
   recordHistory(markdownInput);
-  const { start, before, selected, after } = getSelectionData(markdownInput);
+  const { start, end, before, selected, after } = getSelectionData(markdownInput);
+  const selStart = Math.min(start, end);
   const text = selected || placeholder;
   markdownInput.value = `${before}${beforeText}${text}${afterText}${after}`;
-  const selectionStart = start + beforeText.length;
+  const selectionStart = selStart + beforeText.length;
   const selectionEnd = selectionStart + text.length;
   markdownInput.setSelectionRange(selectionStart, selectionEnd);
   afterEdit(markdownInput, previewOutput);
@@ -950,7 +951,7 @@ function applyInlineFormat(markdownInput, previewOutput, marker, placeholder = '
     // Toggle ON: wrap with marker
     const text = selected || placeholder;
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    const selectionStart = start + m;
+    const selectionStart = selStart + m;
     const selectionEnd = selectionStart + text.length;
     markdownInput.setSelectionRange(selectionStart, selectionEnd);
   }
@@ -997,7 +998,7 @@ function applyInlineCode(markdownInput, previewOutput) {
   } else {
     const text = selected || 'код';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    markdownInput.setSelectionRange(start + m, start + m + text.length);
+    markdownInput.setSelectionRange(selStart + m, selStart + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
@@ -1050,7 +1051,7 @@ function applyStrikethrough(markdownInput, previewOutput) {
   } else {
     const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    markdownInput.setSelectionRange(start + m, start + m + text.length);
+    markdownInput.setSelectionRange(selStart + m, selStart + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
@@ -1095,7 +1096,7 @@ function applyHighlight(markdownInput, previewOutput) {
   } else {
     const text = selected || 'текст';
     markdownInput.value = `${before}${marker}${text}${marker}${after}`;
-    markdownInput.setSelectionRange(start + m, start + m + text.length);
+    markdownInput.setSelectionRange(selStart + m, selStart + m + text.length);
   }
   afterEdit(markdownInput, previewOutput);
   markdownInput.focus();
