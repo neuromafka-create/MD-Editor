@@ -183,6 +183,7 @@ function markTabSaved(tab, { title, filePath, fileHandle } = {}) {
   if (fileHandle !== undefined) tab.fileHandle = fileHandle;
   renderTabs();
   updateTitle();
+  saveSession();
 }
 
 function reportFileError(action, error) {
@@ -1969,6 +1970,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   window.addEventListener('beforeunload', (event) => {
+    const markdownInput = document.getElementById('markdownInput');
+    if (markdownInput) persistActiveTabFromEditor(markdownInput);
+    saveSession();
     const hasDirty = tabs.some((tab) => tab.dirty);
     if (hasDirty) {
       event.preventDefault();
