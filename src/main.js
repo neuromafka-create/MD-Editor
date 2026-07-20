@@ -2181,6 +2181,22 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!event.ctrlKey && !event.metaKey) return;
     const code = event.code;
 
+    /* ——— Ctrl+N: new tab (prevent browser new window) ——— */
+    if (code === 'KeyN' && !event.shiftKey && !inSearchField) {
+      event.preventDefault();
+      openNewTab();
+      return;
+    }
+    /* ——— Ctrl+Shift+N / Ctrl+Shift+T: prevent browser behavior ——— */
+    if (code === 'KeyN' && event.shiftKey) {
+      event.preventDefault();
+      return;
+    }
+    if (code === 'KeyT' && event.shiftKey) {
+      event.preventDefault();
+      return;
+    }
+
     if (code === 'KeyB' && !inSearchField) {
       event.preventDefault();
       applyInlineFormat(markdownInput, previewOutput, '**', 'жирный текст');
