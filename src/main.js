@@ -2313,6 +2313,9 @@ window.addEventListener('DOMContentLoaded', () => {
     { icon: 'x²', label: 'Верхний индекс', action: () => applySuperscript(markdownInput, previewOutput) },
     { icon: 'x₂', label: 'Нижний индекс', action: () => applySubscript(markdownInput, previewOutput) },
     { divider: true },
+    { icon: '❝', label: 'Цитата', action: () => applyQuote(markdownInput, previewOutput) },
+    { icon: '&lt;/&gt;', label: 'Блок кода', action: () => applyCodeBlock(markdownInput, previewOutput) },
+    { divider: true },
     { icon: '🔗', label: 'Ссылка', action: () => applyLink(markdownInput, previewOutput) },
     { icon: '▣', label: 'Изображение', action: () => applyImage(markdownInput, previewOutput) },
   ];
