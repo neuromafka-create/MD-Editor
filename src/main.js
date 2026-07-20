@@ -537,22 +537,16 @@ function addCopyButtonsToTables(previewOutput) {
   if (!previewOutput) return;
   const tables = previewOutput.querySelectorAll('table');
   tables.forEach((table) => {
-    if (table.parentElement.querySelector('.copy-table-button')) return;
-    const wrapper = table.parentElement;
-    if (!wrapper.classList.contains('table-wrapper')) {
-      const div = document.createElement('div');
-      div.className = 'table-wrapper';
-      wrapper.insertBefore(div, table);
-      div.appendChild(table);
-    }
-    const container = table.parentElement;
-    if (!container.querySelector('.copy-table-button')) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'copy-table-button';
-      button.textContent = 'Copy';
-      container.appendChild(button);
-    }
+    if (table.closest('.table-wrapper')) return;
+    const div = document.createElement('div');
+    div.className = 'table-wrapper';
+    table.parentElement.insertBefore(div, table);
+    div.appendChild(table);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'copy-table-button';
+    button.textContent = 'Copy';
+    div.appendChild(button);
   });
 }
 
