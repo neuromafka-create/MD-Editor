@@ -1969,6 +1969,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!markdownInput || !previewOutput) return;
 
+  /* ——— File dropdown ——— */
+  const fileMenu = document.getElementById('fileMenu');
+  const fileTrigger = fileMenu?.querySelector('.menu-trigger');
+  const filePanel = fileMenu?.querySelector('.menu-panel');
+
+  if (fileMenu && fileTrigger) {
+    fileTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileMenu.classList.toggle('is-open');
+    });
+
+    document.addEventListener('click', () => fileMenu.classList.remove('is-open'));
+
+    if (filePanel) {
+      filePanel.addEventListener('click', (e) => e.stopPropagation());
+    }
+  }
+
   const savedTheme = localStorage.getItem('md-editor-theme') || 'dark';
   applyTheme(savedTheme, themeToggle);
 

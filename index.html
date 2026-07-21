@@ -12,13 +12,42 @@
           <span class="brand-mark">M</span>
           <span class="brand-name">MD Editor</span>
         </a>
-        <div class="toolbar-group toolbar-files">
-          <button id="newButton" type="button">Новый</button>
-          <button id="openButton" type="button">Открыть</button>
-          <button id="saveButton" type="button" class="btn-primary" title="Сохранить (Ctrl+S)">Сохранить</button>
-          <button id="saveAsButton" type="button" title="Сохранить как… (Ctrl+Shift+S)">Сохранить как…</button>
-          <button id="exportButton" type="button">HTML</button>
-          <button id="exportDocxButton" type="button" title="Экспортировать в Word (.docx)">DOCX</button>
+        <div class="menu-bar">
+          <div class="menu-dropdown" id="fileMenu">
+            <button type="button" class="menu-trigger">Файл ▾</button>
+            <div class="menu-panel">
+              <button id="newButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                <span>Создать</span>
+                <kbd>Ctrl+N</kbd>
+              </button>
+              <button id="openButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <span>Открыть</span>
+                <kbd>Ctrl+O</kbd>
+              </button>
+              <div class="menu-divider"></div>
+              <button id="saveButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                <span>Сохранить</span>
+                <kbd>Ctrl+S</kbd>
+              </button>
+              <button id="saveAsButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><path d="M12 3v10"/></svg>
+                <span>Сохранить как…</span>
+                <kbd>Ctrl+Shift+S</kbd>
+              </button>
+              <div class="menu-divider"></div>
+              <button id="exportButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                <span>Экспорт HTML</span>
+              </button>
+              <button id="exportDocxButton" type="button" class="menu-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+                <span>Экспорт DOCX</span>
+              </button>
+            </div>
+          </div>
         </div>
         <span class="toolbar-divider" aria-hidden="true"></span>
         <div class="toolbar-group toolbar-formatting" role="toolbar" aria-label="Форматирование">
@@ -28,29 +57,29 @@
           <button id="copyButton" type="button" class="toolbar-icon-button" title="Копировать"><span>⧉</span></button>
           <button id="pasteButton" type="button" class="toolbar-icon-button" title="Вставить"><span>⇩</span></button>
           <span class="toolbar-divider" aria-hidden="true"></span>
-          <button id="boldButton" type="button" class="toolbar-icon-button" title="Жирный"><span>B</span></button>
-          <button id="italicButton" type="button" class="toolbar-icon-button" title="Курсив"><span>I</span></button>
-          <button id="strikethroughButton" type="button" class="toolbar-icon-button" title="Зачёркивание (Ctrl+Shift+X)"><span><s>S</s></span></button>
-          <button id="highlightButton" type="button" class="toolbar-icon-button" title="Подсветка (Ctrl+Shift+H)"><span style="background:#eab308;color:#000;padding:0 3px;border-radius:3px;">H</span></button>
-          <button id="inlineCodeButton" type="button" class="toolbar-icon-button" title="Инлайн-код"><span>`</span></button>
+          <button id="boldButton" type="button" class="toolbar-icon-button" title="Жирный (Ctrl+B)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+          <button id="italicButton" type="button" class="toolbar-icon-button" title="Курсив (Ctrl+I)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+          <button id="strikethroughButton" type="button" class="toolbar-icon-button" title="Зачёркивание (Ctrl+Shift+X)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4H9a3 3 0 0 0-3 3v0a3 3 0 0 0 3 3h6"/><line x1="4" y1="12" x2="20" y2="12"/><path d="M15 12a3 3 0 0 1 0 6H8"/></svg></button>
+          <button id="highlightButton" type="button" class="toolbar-icon-button" title="Подсветка (Ctrl+Shift+H)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></button>
+          <button id="inlineCodeButton" type="button" class="toolbar-icon-button" title="Инлайн-код"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
           <span class="toolbar-divider" aria-hidden="true"></span>
-          <button id="superscriptButton" type="button" class="toolbar-icon-button" title="Верхний индекс"><span>x²</span></button>
-          <button id="subscriptButton" type="button" class="toolbar-icon-button" title="Нижний индекс"><span>x₂</span></button>
+          <button id="superscriptButton" type="button" class="toolbar-icon-button" title="Верхний индекс"><span>x<sup>2</sup></span></button>
+          <button id="subscriptButton" type="button" class="toolbar-icon-button" title="Нижний индекс"><span>x<sub>2</sub></span></button>
           <span class="toolbar-divider" aria-hidden="true"></span>
-          <button id="heading1Button" type="button" class="toolbar-icon-button" title="Заголовок H1"><span>H1</span></button>
-          <button id="heading2Button" type="button" class="toolbar-icon-button" title="Заголовок H2"><span>H2</span></button>
-          <button id="heading3Button" type="button" class="toolbar-icon-button" title="Заголовок H3"><span>H3</span></button>
-          <button id="heading4Button" type="button" class="toolbar-icon-button" title="Заголовок H4"><span>H4</span></button>
+          <button id="heading1Button" type="button" class="toolbar-icon-button heading-btn" title="Заголовок H1 (Alt+1)"><span>H1</span></button>
+          <button id="heading2Button" type="button" class="toolbar-icon-button heading-btn" title="Заголовок H2 (Alt+2)"><span>H2</span></button>
+          <button id="heading3Button" type="button" class="toolbar-icon-button heading-btn" title="Заголовок H3 (Alt+3)"><span>H3</span></button>
+          <button id="heading4Button" type="button" class="toolbar-icon-button heading-btn" title="Заголовок H4 (Alt+4)"><span>H4</span></button>
           <span class="toolbar-divider" aria-hidden="true"></span>
-          <button id="unorderedListButton" type="button" class="toolbar-icon-button" title="Маркированный список"><span>•</span></button>
-          <button id="orderedListButton" type="button" class="toolbar-icon-button" title="Нумерованный список"><span>1.</span></button>
-          <button id="taskListButton" type="button" class="toolbar-icon-button" title="Список задач"><span>☑</span></button>
+          <button id="unorderedListButton" type="button" class="toolbar-icon-button" title="Маркированный список"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1" fill="currentColor"/><circle cx="4" cy="12" r="1" fill="currentColor"/><circle cx="4" cy="18" r="1" fill="currentColor"/></svg></button>
+          <button id="orderedListButton" type="button" class="toolbar-icon-button" title="Нумерованный список"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><text x="2" y="8" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">1</text><text x="2" y="14" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">2</text><text x="2" y="20" font-size="7" fill="currentColor" stroke="none" font-family="sans-serif">3</text></svg></button>
+          <button id="taskListButton" type="button" class="toolbar-icon-button" title="Список задач"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="M5 8l1.5 1.5L9 6"/><line x1="12" y1="8" x2="21" y2="8"/><rect x="3" y="13" width="6" height="6" rx="1"/><line x1="12" y1="16" x2="21" y2="16"/></svg></button>
           <span class="toolbar-divider" aria-hidden="true"></span>
-          <button id="quoteButton" type="button" class="toolbar-icon-button" title="Цитата"><span>❝</span></button>
-          <button id="codeButton" type="button" class="toolbar-icon-button" title="Блок кода"><span>&lt;/&gt;</span></button>
-          <button id="hrButton" type="button" class="toolbar-icon-button" title="Горизонтальная линия"><span>—</span></button>
-          <button id="imageButton" type="button" class="toolbar-icon-button" title="Вставить изображение"><span>▣</span></button>
-          <button id="linkButton" type="button" class="toolbar-icon-button" title="Вставить ссылку"><span>🔗</span></button>
+          <button id="quoteButton" type="button" class="toolbar-icon-button" title="Цитата"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z"/></svg></button>
+          <button id="codeButton" type="button" class="toolbar-icon-button" title="Блок кода"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+          <button id="hrButton" type="button" class="toolbar-icon-button" title="Горизонтальная линия"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"/></svg></button>
+          <button id="imageButton" type="button" class="toolbar-icon-button" title="Вставить изображение"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+          <button id="linkButton" type="button" class="toolbar-icon-button" title="Вставить ссылку"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
         </div>
         <div class="topbar-actions">
           <button id="viewModeToggle" type="button" class="btn-ghost" title="Режим вида: обе панели / только редактор / только превью">Вид</button>
