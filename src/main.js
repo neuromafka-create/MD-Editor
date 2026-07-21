@@ -192,13 +192,278 @@ function reportFileError(action, error) {
   window.alert(`${action}: ${message}`);
 }
 
+/**
+ * CommonMark requires angle brackets for destinations with spaces.
+ * Wrap local image paths so `![](Screenshot 2026-07-21.png)` becomes an <img>.
+ */
+function normalizeMarkdownImagePaths(markdown) {
+  return String(markdown || '').replace(
+    /!\[([^\]]*)\]\((<[^>\n]+>|[^)\n]+)\)/g,
+    (full, alt, destRaw) => {
+      const dest = String(destRaw || '').trim();
+      if (!dest || dest.startsWith('<')) return full;
+      if (/^(?:https?:|data:|blob:|asset:)/i.test(dest)) return full;
+      if (!/\s/.test(dest)) return full;
+      return `![${alt}](<${dest}>)`;
+    }
+  );
+}
+
 function renderPreview(markdownInput, previewOutput) {
   const content = markdownInput.value || '';
-  previewOutput.innerHTML = marked.parse(content);
+  previewOutput.innerHTML = marked.parse(normalizeMarkdownImagePaths(content));
   applyHeadingAnchors(previewOutput, content);
   addCopyButtonsToCodeBlocks(previewOutput);
   addCopyButtonsToTables(previewOutput);
   enhancePreviewTocLinks(previewOutput);
+  void resolvePreviewImages(previewOutput);
+}
+
+/** Remote / already-inlined sources that do not need local FS resolution. */
+function isRemoteOrInlineImageSrc(src) {
+  if (!src) return true;
+  // data/blob already displayable
+  if (/^(?:data:|blob:)/i.test(src)) return true;
+  // Broken Tauri asset-protocol URLs must be re-resolved via IPC
+  if (isTauriAssetUrl(src)) return false;
+  // Ordinary http(s)
+  if (/^https?:\/\//i.test(src)) return true;
+  if (/^(?:tauri:)/i.test(src)) return true;
+  return false;
+}
+
+function isTauriAssetUrl(src) {
+  return /^https?:\/\/asset\.localhost\//i.test(src) || /^asset:/i.test(src);
+}
+
+function pathDirname(filePath) {
+  if (!filePath) return null;
+  const normalized = String(filePath).replace(/[/\\]+$/, '');
+  const idx = Math.max(normalized.lastIndexOf('/'), normalized.lastIndexOf('\\'));
+  if (idx < 0) return null;
+  const dir = normalized.slice(0, idx);
+  // "C:\file.md" → "C:\"
+  if (/^[a-zA-Z]:$/i.test(dir)) return `${dir}\\`;
+  return dir || null;
+}
+
+function isWindowsPathContext(path) {
+  return /^[a-zA-Z]:/i.test(path) || path.startsWith('\\\\') || path.includes('\\');
+}
+
+function isAbsoluteLocalPath(path) {
+  const value = String(path || '');
+  return /^[a-zA-Z]:[\\/]/.test(value)
+    || value.startsWith('\\\\')
+    || (value.startsWith('/') && !/^\/\/[^/]/.test(value));
+}
+
+/**
+ * marked / HTML / convertFileSrc often percent-encode paths (spaces → %20 → %2520).
+ * Decode until stable (max 3 passes).
+ */
+function decodeFsPath(path) {
+  if (!path) return path;
+  let result = String(path);
+  for (let i = 0; i < 3; i += 1) {
+    if (!/%[0-9A-Fa-f]{2}/.test(result)) break;
+    try {
+      const next = decodeURIComponent(result);
+      if (next === result) break;
+      result = next;
+    } catch {
+      break;
+    }
+  }
+  return result;
+}
+
+/** Recover filesystem path from http://asset.localhost/C%3A%5C... or asset://... */
+function pathFromTauriAssetUrl(src) {
+  try {
+    const normalized = String(src)
+      .replace(/^asset:\/\/(?:localhost)?\/?/i, 'http://asset.localhost/')
+      .replace(/^asset:/i, 'http://asset.localhost/');
+    const parsed = new URL(normalized);
+    // encodeURIComponent(fullPath) puts everything in pathname
+    let encoded = parsed.pathname || '';
+    if (encoded.startsWith('/')) encoded = encoded.slice(1);
+    // Prefer raw href tail if pathname over-decoded oddly
+    if (!encoded && parsed.href.includes('asset.localhost/')) {
+      encoded = parsed.href.split('asset.localhost/')[1] || '';
+    }
+    let path = decodeFsPath(encoded);
+    // Windows drive paths may arrive as C:/... after URL parsing
+    if (/^[a-zA-Z]:\//.test(path)) {
+      path = path.replace(/\//g, '\\');
+    }
+    return path || null;
+  } catch {
+    return null;
+  }
+}
+
+function fileUrlToPath(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'file:') return null;
+    let pathname = decodeFsPath(parsed.pathname || '');
+    // Windows: /C:/Users/... → C:\Users\...
+    if (/^\/[a-zA-Z]:/.test(pathname)) {
+      pathname = pathname.slice(1).replace(/\//g, '\\');
+    }
+    return pathname;
+  } catch {
+    return null;
+  }
+}
+
+function joinBaseAndRelative(baseDir, relativePath) {
+  const isWin = isWindowsPathContext(baseDir);
+  const sep = isWin ? '\\' : '/';
+  const parts = isWin
+    ? baseDir.replace(/[/\\]+$/, '').split(/[/\\]/).filter(Boolean)
+    : baseDir.replace(/\/+$/, '').split('/').filter(Boolean);
+
+  for (const segment of relativePath.replace(/\\/g, '/').split('/')) {
+    if (!segment || segment === '.') continue;
+    if (segment === '..') {
+      if (isWin) {
+        if (parts.length > 1) parts.pop();
+      } else if (parts.length > 0) {
+        parts.pop();
+      }
+      continue;
+    }
+    // Decode each segment: Screenshot%202026... → Screenshot 2026...
+    parts.push(decodeFsPath(segment));
+  }
+
+  if (isWin) return parts.join(sep);
+  return `/${parts.join('/')}`;
+}
+
+function resolveLocalImagePath(baseDir, src) {
+  if (!src) return null;
+  const raw = String(src).trim();
+  if (!raw) return null;
+
+  if (isTauriAssetUrl(raw)) {
+    return pathFromTauriAssetUrl(raw);
+  }
+
+  if (/^file:/i.test(raw)) {
+    return fileUrlToPath(raw);
+  }
+
+  // Prefer attribute value; if browser already resolved to page origin, strip it
+  let candidate = raw;
+  try {
+    if (/^https?:\/\//i.test(raw) && !isTauriAssetUrl(raw)) {
+      const pageOrigin = typeof location !== 'undefined' ? location.origin : '';
+      if (pageOrigin && raw.startsWith(pageOrigin + '/')) {
+        candidate = decodeFsPath(raw.slice(pageOrigin.length + 1));
+      } else {
+        return null;
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  const trimmed = decodeFsPath(candidate);
+  if (!trimmed) return null;
+
+  if (isAbsoluteLocalPath(trimmed)) {
+    if (/^[a-zA-Z]:[\\/]/.test(trimmed) || trimmed.startsWith('\\\\')) {
+      return trimmed.replace(/\//g, '\\');
+    }
+    return trimmed;
+  }
+
+  // Relative path needs the open document directory
+  if (!baseDir) return null;
+  return joinBaseAndRelative(baseDir, trimmed);
+}
+
+/** @type {Map<string, string>} absolute path → data URL */
+const localImageDataUrlCache = new Map();
+/** @type {Map<string, Promise<string>>} in-flight loads */
+const localImageDataUrlPending = new Map();
+
+async function loadLocalImageDataUrl(absolutePath) {
+  if (localImageDataUrlCache.has(absolutePath)) {
+    return localImageDataUrlCache.get(absolutePath);
+  }
+  if (localImageDataUrlPending.has(absolutePath)) {
+    return localImageDataUrlPending.get(absolutePath);
+  }
+
+  const pending = tauriInvoke('read_local_image_data_url', { path: absolutePath })
+    .then((dataUrl) => {
+      localImageDataUrlCache.set(absolutePath, dataUrl);
+      localImageDataUrlPending.delete(absolutePath);
+      return dataUrl;
+    })
+    .catch((error) => {
+      localImageDataUrlPending.delete(absolutePath);
+      throw error;
+    });
+
+  localImageDataUrlPending.set(absolutePath, pending);
+  return pending;
+}
+
+/**
+ * Load local / relative images into the preview via Rust (data URL).
+ * Never uses convertFileSrc / asset.localhost (broken with %20 → %2520 on Windows).
+ * Relative paths resolve against the active tab's open .md file directory.
+ */
+async function resolvePreviewImages(previewOutput) {
+  if (!previewOutput || !isTauriRuntime()) return;
+
+  const tab = getActiveTab();
+  const baseDir = pathDirname(tab?.filePath);
+  const images = [...previewOutput.querySelectorAll('img[src]')];
+  if (!images.length) return;
+
+  const generation = previewOutput.dataset.imgResolveGen
+    ? Number(previewOutput.dataset.imgResolveGen) + 1
+    : 1;
+  previewOutput.dataset.imgResolveGen = String(generation);
+
+  await Promise.all(images.map(async (img) => {
+    if (!img.isConnected) return;
+    if (Number(previewOutput.dataset.imgResolveGen) !== generation) return;
+
+    // getAttribute keeps the raw markdown path; .src may already be resolved/encoded
+    const original = img.getAttribute('src') || img.getAttribute('data-local-src') || '';
+    if (!original || isRemoteOrInlineImageSrc(original)) return;
+
+    const absolute = resolveLocalImagePath(baseDir, original);
+    if (!absolute) {
+      img.title = baseDir
+        ? `Не удалось разрешить путь: ${decodeFsPath(original)}`
+        : 'Откройте .md файл с диска (Файл → Открыть), чтобы показывать локальные изображения';
+      return;
+    }
+
+    img.dataset.localSrc = original;
+    img.dataset.localPath = absolute;
+
+    try {
+      const dataUrl = await loadLocalImageDataUrl(absolute);
+      if (!img.isConnected) return;
+      if (Number(previewOutput.dataset.imgResolveGen) !== generation) return;
+      img.src = dataUrl;
+      img.removeAttribute('title');
+    } catch (error) {
+      console.warn('Local image load failed', absolute, error);
+      if (img.isConnected) {
+        img.title = `Не удалось загрузить: ${absolute} (${error?.message || error})`;
+      }
+    }
+  }));
 }
 
 function applyHeadingAnchors(previewOutput, markdown) {
@@ -1799,6 +2064,69 @@ async function exportDocx(markdownInput) {
   }
 }
 
+/**
+ * Embed local image files as data URLs so PDF capture works offline / in Tauri.
+ * @param {string} htmlBody
+ * @param {string|null} baseDir
+ * @returns {Promise<string>}
+ */
+async function embedLocalImagesInHtml(htmlBody, baseDir) {
+  if (!htmlBody || !isTauriRuntime()) return htmlBody;
+
+  const container = document.createElement('div');
+  container.innerHTML = htmlBody;
+  const images = [...container.querySelectorAll('img[src]')];
+  if (!images.length) return htmlBody;
+
+  await Promise.all(images.map(async (img) => {
+    const original = img.getAttribute('src') || '';
+    if (!original || isRemoteOrInlineImageSrc(original)) return;
+    const absolute = resolveLocalImagePath(baseDir, original);
+    if (!absolute) return;
+    try {
+      img.src = await loadLocalImageDataUrl(absolute);
+    } catch (error) {
+      console.warn('PDF embed image failed', absolute, error);
+    }
+  }));
+
+  return container.innerHTML;
+}
+
+async function exportPdf(markdownInput) {
+  const tab = getActiveTab();
+  if (!tab) return;
+  persistActiveTabFromEditor(markdownInput);
+  const fileName = `${exportBaseName(tab)}.pdf`;
+  const markdown = markdownInput.value || '';
+
+  try {
+    // Lazy-load html2pdf stack (large) only when exporting
+    const { htmlToPdfBytes } = await import('./exportPdf.js');
+
+    let htmlBody = marked.parse(normalizeMarkdownImagePaths(markdown));
+    const baseDir = pathDirname(tab.filePath);
+    htmlBody = await embedLocalImagesInHtml(htmlBody, baseDir);
+
+    const bytes = await htmlToPdfBytes(htmlBody, {
+      title: tab.title || 'Document'
+    });
+
+    await saveBinaryExport(bytes, fileName, {
+      mimeType: 'application/pdf',
+      filterName: 'PDF',
+      extensions: ['pdf'],
+      dialogTitle: 'Экспортировать в PDF',
+      pickerTypes: [{
+        description: 'PDF',
+        accept: { 'application/pdf': ['.pdf'] }
+      }]
+    });
+  } catch (error) {
+    reportFileError('Не удалось экспортировать PDF', error);
+  }
+}
+
 function countMatches(text, query) {
   if (!query) return 0;
   let count = 0;
@@ -1957,6 +2285,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const saveAsButton = document.getElementById('saveAsButton');
   const exportButton = document.getElementById('exportButton');
   const exportDocxButton = document.getElementById('exportDocxButton');
+  const exportPdfButton = document.getElementById('exportPdfButton');
   const newIconButton = document.getElementById('newIconButton');
   const openIconButton = document.getElementById('openIconButton');
   const saveIconButton = document.getElementById('saveIconButton');
@@ -2132,6 +2461,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (saveAsButton) saveAsButton.addEventListener('click', () => saveFileAs(markdownInput));
   if (exportButton) exportButton.addEventListener('click', () => exportHtml(markdownInput));
   if (exportDocxButton) exportDocxButton.addEventListener('click', () => exportDocx(markdownInput));
+  if (exportPdfButton) exportPdfButton.addEventListener('click', () => exportPdf(markdownInput));
 
   if (newIconButton) newIconButton.addEventListener('click', () => openNewTab());
   if (openIconButton) openIconButton.addEventListener('click', () => openFile());

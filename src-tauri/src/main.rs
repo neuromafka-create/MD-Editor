@@ -124,6 +124,52 @@ async fn save_bytes_file_as(
     Ok(Some(path_to_string(path)))
 }
 
+fn mime_from_path(path: &std::path::Path) -> &'static str {
+    match path
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap_or("")
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "png" => "image/png",
+        "jpg" | "jpeg" | "jpe" => "image/jpeg",
+        "gif" => "image/gif",
+        "webp" => "image/webp",
+        "svg" => "image/svg+xml",
+        "bmp" => "image/bmp",
+        "ico" => "image/x-icon",
+        "avif" => "image/avif",
+        "tif" | "tiff" => "image/tiff",
+        _ => "application/octet-stream",
+    }
+}
+
+/// Read a local image and return a data URL for WebView preview.
+/// Avoids asset-protocol encoding/scope issues on Windows.
+#[tauri::command]
+fn read_local_image_data_url(path: String) -> Result<String, String> {
+    let path = std::path::Path::new(&path);
+    if !path.is_file() {
+        return Err(format!("Файл не найден: {}", path.display()));
+    }
+
+    const MAX_BYTES: u64 = 25 * 1024 * 1024;
+    let meta = std::fs::metadata(path).map_err(|error| error.to_string())?;
+    if meta.len() > MAX_BYTES {
+        return Err(format!(
+            "Изображение слишком большое ({} МБ). Максимум 25 МБ.",
+            meta.len() / (1024 * 1024)
+        ));
+    }
+
+    let bytes = std::fs::read(path).map_err(|error| error.to_string())?;
+    let mime = mime_from_path(path);
+    use base64::Engine;
+    let encoded = base64::engine::general_purpose::STANDARD.encode(bytes);
+    Ok(format!("data:{mime};base64,{encoded}"))
+}
+
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -131,7 +177,8 @@ fn main() {
             write_markdown_file,
             save_markdown_file_as,
             save_html_file_as,
-            save_bytes_file_as
+            save_bytes_file_as,
+            read_local_image_data_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
