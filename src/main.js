@@ -2,7 +2,10 @@ import './style.css';
 import 'highlight.js/styles/github-dark.css';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
+import { version as appVersion } from '../package.json';
 import { markdownToDocxBytes } from './exportDocx.js';
+import { initInterfaceSettingsDialog } from './interfaceSettings.js';
+import { initToolbarCustomization } from './toolbarLayout.js';
 import { extractHeadings, insertOrUpdateToc, findTocRange } from './toc.js';
 
 marked.use({
@@ -2302,22 +2305,115 @@ window.addEventListener('DOMContentLoaded', () => {
 
   if (!markdownInput || !previewOutput) return;
 
-  /* ——— File dropdown ——— */
-  const fileMenu = document.getElementById('fileMenu');
-  const fileTrigger = fileMenu?.querySelector('.menu-trigger');
-  const filePanel = fileMenu?.querySelector('.menu-panel');
+  /* ——— Top menus (File / Settings) ——— */
+  const menuDropdowns = [...document.querySelectorAll('.menu-dropdown')];
 
-  if (fileMenu && fileTrigger) {
-    fileTrigger.addEventListener('click', (e) => {
+  function closeAllMenus(except = null) {
+    menuDropdowns.forEach((menu) => {
+      if (menu !== except) menu.classList.remove('is-open');
+    });
+  }
+
+  menuDropdowns.forEach((menu) => {
+    const trigger = menu.querySelector('.menu-trigger');
+    const panel = menu.querySelector('.menu-panel');
+    if (!trigger) return;
+
+    trigger.addEventListener('click', (e) => {
       e.stopPropagation();
-      fileMenu.classList.toggle('is-open');
+      const willOpen = !menu.classList.contains('is-open');
+      closeAllMenus();
+      if (willOpen) menu.classList.add('is-open');
     });
 
-    document.addEventListener('click', () => fileMenu.classList.remove('is-open'));
-
-    if (filePanel) {
-      filePanel.addEventListener('click', (e) => e.stopPropagation());
+    if (panel) {
+      panel.addEventListener('click', (e) => {
+        // Keep menu open only if needed; close after choosing an item
+        const item = e.target.closest('.menu-item');
+        if (item && !item.disabled) {
+          closeAllMenus();
+        }
+        e.stopPropagation();
+      });
     }
+  });
+
+  document.addEventListener('click', () => closeAllMenus());
+
+  /* ——— Interface settings ——— */
+  const interfaceDialogApi = initInterfaceSettingsDialog({
+    dialog: document.getElementById('interfaceDialog'),
+    openButton: document.getElementById('settingsInterfaceButton'),
+    onCloseOther: () => {
+      closeAllMenus();
+      closeAboutDialog();
+      toolbarCustomizeApi.exit();
+    }
+  });
+
+  /* ——— Toolbar layout customization ——— */
+  const toolbarCustomizeApi = initToolbarCustomization({
+    toolbar: document.getElementById('mainToolbar'),
+    openButton: document.getElementById('settingsToolbarButton'),
+    onModeChange: (on) => {
+      if (on) {
+        closeAllMenus();
+        closeAboutDialog();
+        interfaceDialogApi.close();
+      }
+    }
+  });
+
+  /* ——— About dialog ——— */
+  const aboutDialog = document.getElementById('aboutDialog');
+  const aboutMenuButton = document.getElementById('aboutMenuButton');
+  const aboutVersionEl = document.getElementById('aboutDialogVersion');
+
+  function openAboutDialog() {
+    if (!aboutDialog) return;
+    interfaceDialogApi.close();
+    toolbarCustomizeApi.exit();
+    if (aboutVersionEl) aboutVersionEl.textContent = `v${appVersion}`;
+    aboutDialog.hidden = false;
+    document.body.classList.add('modal-open');
+    const closeBtn = aboutDialog.querySelector('.modal-close');
+    closeBtn?.focus?.();
+  }
+
+  function closeAboutDialog() {
+    if (!aboutDialog || aboutDialog.hidden) return;
+    aboutDialog.hidden = true;
+    if (!document.querySelector('.modal:not([hidden])')) {
+      document.body.classList.remove('modal-open');
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllMenus();
+      closeAboutDialog();
+      interfaceDialogApi.close();
+      if (toolbarCustomizeApi.isActive()) {
+        toolbarCustomizeApi.exit();
+        e.preventDefault();
+      }
+    }
+  });
+
+  if (aboutMenuButton) {
+    aboutMenuButton.addEventListener('click', () => {
+      closeAllMenus();
+      openAboutDialog();
+    });
+  }
+
+  if (aboutDialog) {
+    aboutDialog.querySelectorAll('[data-about-close]').forEach((el) => {
+      el.addEventListener('click', () => closeAboutDialog());
+    });
+    aboutDialog.addEventListener('click', (e) => {
+      if (e.target === aboutDialog) closeAboutDialog();
+    });
   }
 
   const savedTheme = localStorage.getItem('md-editor-theme') || 'dark';

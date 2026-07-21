@@ -1,6 +1,6 @@
 # MD Editor
 
-**MD Editor** — Markdown-редактор для десктопа и браузера (v1.2.1).
+**MD Editor** — Markdown-редактор для десктопа и браузера (v1.3.0).
 
 Стек: **Vite 8**, **Tauri 2**, vanilla JS, **marked**, **highlight.js**, **docx**.
 
@@ -291,7 +291,7 @@ npm run tauri:build
 
 | Артефакт | Путь |
 |----------|------|
-| **Установщик NSIS (x64)** | `src-tauri/target/release/bundle/nsis/MD Editor_1.2.1_x64-setup.exe` |
+| **Установщик NSIS (x64)** | `src-tauri/target/release/bundle/nsis/MD Editor_1.3.0_x64-setup.exe` |
 | Исполняемый файл | `src-tauri/target/release/md-editor.exe` |
 
 Установщик:
@@ -301,7 +301,7 @@ npm run tauri:build
 - добавляет ярлык в меню «Пуск» (папка **MD Editor**);
 - при необходимости скачивает bootstrapper **WebView2** (нужен для интерфейса).
 
-Запуск установщика: двойной щелчок по `MD Editor_1.2.1_x64-setup.exe`.
+Запуск установщика: двойной щелчок по `MD Editor_1.3.0_x64-setup.exe`.
 
 ---
 

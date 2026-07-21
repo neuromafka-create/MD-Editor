@@ -21,7 +21,7 @@
         display: inline-flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
 
       .about-logo .brand-mark {
@@ -35,6 +35,22 @@
         font-size: 28px;
         font-weight: 700;
         letter-spacing: -0.02em;
+      }
+
+      .about-version {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 0 16px;
+        padding: 4px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+        color: var(--accent-text);
+        background: var(--accent-soft);
+        border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+        border-radius: 999px;
       }
 
       .about-tagline {
@@ -216,8 +232,9 @@
           <span class="brand-mark">M</span>
           <span class="brand-name">MD Editor</span>
         </div>
+        <div id="appVersion" class="about-version" aria-label="Версия приложения">…</div>
         <p class="about-tagline">
-          Markdown-редактор для десктопа и браузера с живым предпросмотром, вкладками, оглавлением и экспортом в HTML/DOCX.
+          Markdown-редактор для десктопа и браузера с живым предпросмотром, вкладками, оглавлением и экспортом в HTML/DOCX/PDF.
         </p>
         <div class="about-links">
           <a href="https://github.com/neuromafka-create/MD-Editor" class="primary" target="_blank" rel="noopener">GitHub</a>
@@ -345,6 +362,11 @@
       </section>
 
       <section class="about-section">
+        <h2>Версия</h2>
+        <p>Текущая версия: <strong id="appVersionDetail">…</strong> (из <code>package.json</code>).</p>
+      </section>
+
+      <section class="about-section">
         <h2>Лицензия</h2>
         <p><a href="https://github.com/neuromafka-create/MD-Editor/blob/master/LICENSE" target="_blank" rel="noopener" style="color: var(--accent-hover);">MIT</a> &mdash; используйте свободно.</p>
       </section>
@@ -354,5 +376,6 @@
         <a href="https://github.com/neuromafka-create/MD-Editor" target="_blank" rel="noopener">GitHub &rarr;</a>
       </div>
     </div>
+    <script type="module" src="/src/about.js"></script>
   </body>
 </html>
