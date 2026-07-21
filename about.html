@@ -251,80 +251,60 @@
           <li>Режимы отображения: обе панели / только редактор / только превью</li>
           <li>Полный экран (<code>F11</code>)</li>
           <li>Изменяемая граница между панелями (перетаскивание, клавиатура, двойной щелчок &mdash; 50/50)</li>
-          <li>Живой рендер через <code>marked</code></li>
-          <li>Нумерация строк и подсветка текущей строки</li>
-          <li>Статус-бар: число слов, символов, позиция курсора</li>
-          <li>Копирование содержимого блоков кода в превью</li>
-          <li>Тёмная и светлая темы (сохраняются в <code>localStorage</code>)</li>
-          <li><strong>Автосохранение</strong> каждые 3 секунды + восстановление сессии после перезагрузки</li>
+          <li>Живой рендер через <code>marked</code>, подсветка кода (highlight.js)</li>
+          <li>Нумерация строк, статус-бар, копирование кода и таблиц в превью</li>
+          <li>Тёмная и светлая темы</li>
+          <li><strong>Автосохранение</strong> каждые 3 секунды + восстановление сессии</li>
         </ul>
 
         <h3>Вкладки</h3>
         <ul>
-          <li>Несколько документов одновременно</li>
-          <li>Переключение вкладок с сохранением содержимого, курсора и прокрутки</li>
-          <li><code>Ctrl+Tab</code> &mdash; быстрое переключение по последнему использованию (MRU)</li>
-          <li>Отдельная история undo/redo на каждую вкладку</li>
-          <li>Индикатор несохранённых изменений</li>
-          <li>Закрытие вкладки с подтверждением</li>
+          <li>Несколько документов, MRU-переключение <code>Ctrl+Tab</code></li>
+          <li>Отдельный undo/redo, индикатор несохранённых правок</li>
+          <li>Закрытие с подтверждением при несохранённых изменениях</li>
         </ul>
 
-        <h3>Файлы</h3>
+        <h3>Файлы и экспорт</h3>
         <ul>
-          <li><strong>Открыть:</strong> диалог выбора <code>.md</code> / <code>.markdown</code> / <code>.mdown</code> / <code>.txt</code></li>
-          <li><strong>Сохранить</strong> (<code>Ctrl+S</code>): тихая перезапись открытого файла</li>
-          <li><strong>Сохранить как&hellip;</strong> (<code>Ctrl+Shift+S</code>): диалог выбора пути</li>
-          <li><strong>Tauri (десктоп):</strong> нативные диалоги и запись на диск</li>
-          <li><strong>Браузер:</strong> File System Access API (Chrome / Edge) или fallback &mdash; скачивание</li>
+          <li>Меню <strong>Файл</strong>: создать, открыть, сохранить, сохранить как, экспорт HTML / DOCX / PDF</li>
+          <li><strong>Tauri:</strong> нативные диалоги; <strong>браузер:</strong> File System Access API или download</li>
+          <li>Локальные картинки в десктопе: относительные пути к каталогу открытого <code>.md</code></li>
         </ul>
 
-        <h3>Экспорт</h3>
+        <h3>Настройки</h3>
         <ul>
-          <li><strong>HTML</strong> &mdash; полноценный HTML-документ</li>
-          <li><strong>DOCX</strong> &mdash; Word-документ (заголовки, списки, код, цитаты, ссылки, индексы, таблицы)</li>
-          <li><strong>PDF</strong> &mdash; документ A4 (html2pdf.js), с встраиванием локальных изображений в десктопе</li>
+          <li><strong>Интерфейс</strong> &mdash; шрифты, размер, цвет и фон отдельно для редактора и предпросмотра</li>
+          <li>Контраст блоков кода (мягкий / обычный / высокий / максимальный)</li>
+          <li>Курсор редактора: цвет, форма/ширина, моргание</li>
+          <li><strong>Панель инструментов</strong> &mdash; перетаскивание кнопок и разделителей, сброс раскладки</li>
+          <li><strong>О программе</strong> &mdash; краткое окно с версией, copyright и ссылкой на GitHub</li>
         </ul>
 
         <h3>Форматирование</h3>
-        <p>Панель инструментов: отмена/повтор, вырезать/копировать/вставить, жирный, курсив, зачёркивание, инлайн-код, выделение, верхний/нижний индекс, заголовки H1&ndash;H4, списки, списки задач, цитата, блок кода, горизонтальная линия, вставка изображения и ссылки.</p>
-        <p>Подсветка активных кнопок: если курсор внутри форматирования, соответствующая кнопка подсвечивается. Повторное нажатие снимает форматирование (тогл).</p>
-        <p>Автозакрытие скобок и кавычек: <code>()</code>, <code>[]</code>, <code>""</code>, <code>''</code>, <code>``</code>.</p>
+        <p>Жирный, курсив, зачёркивание, инлайн-код, выделение, индексы, H1&ndash;H4, списки и задачи, цитата, блок кода, HR, изображение, ссылка. Тогл форматирования и подсветка активных кнопок. Контекстное меню по правому клику.</p>
 
-        <h3>Оглавление (TOC)</h3>
+        <h3>Оглавление и поиск</h3>
         <ul>
-          <li>Боковая панель структуры документа (H1&ndash;H4)</li>
-          <li>Клик по пункту &mdash; переход к заголовку</li>
-          <li>Подсветка текущего раздела по позиции курсора</li>
-          <li>Вставка / обновление блока TOC в документе</li>
-        </ul>
-
-        <h3>Поиск и замена</h3>
-        <ul>
-          <li>Найти далее (циклически)</li>
-          <li>Заменить текущее вхождение / заменить все</li>
-          <li>Счётчик совпадений <code>N / M</code></li>
+          <li>Боковая панель TOC (H1&ndash;H4), вставка/обновление блока в документе</li>
+          <li>Поиск и замена со счётчиком совпадений</li>
         </ul>
       </section>
 
       <section class="about-section">
         <h2>Горячие клавиши</h2>
-        <p>Работают по <code>event.code</code> (не зависят от раскладки клавиатуры). На macOS вместо <code>Ctrl</code> используется <code>Cmd</code>.</p>
+        <p>Работают по <code>event.code</code> (не зависят от раскладки). На macOS &mdash; <code>Cmd</code> вместо <code>Ctrl</code>.</p>
         <table class="about-table">
           <thead><tr><th>Клавиши</th><th>Действие</th></tr></thead>
           <tbody>
-            <tr><td><code>Ctrl+B</code></td><td>Жирный</td></tr>
-            <tr><td><code>Ctrl+I</code></td><td>Курсив</td></tr>
-            <tr><td><code>Ctrl+S</code></td><td>Сохранить</td></tr>
-            <tr><td><code>Ctrl+Shift+S</code></td><td>Сохранить как&hellip;</td></tr>
-            <tr><td><code>Ctrl+F</code></td><td>Фокус в поле поиска</td></tr>
-            <tr><td><code>Ctrl+H</code></td><td>Фокус в поле замены</td></tr>
-            <tr><td><code>Ctrl+T</code></td><td>Новая вкладка</td></tr>
-            <tr><td><code>Ctrl+W</code></td><td>Закрыть вкладку</td></tr>
-            <tr><td><code>Ctrl+Tab</code></td><td>Следующая вкладка (MRU)</td></tr>
-            <tr><td><code>Ctrl+Shift+Tab</code></td><td>Предыдущая вкладка (MRU)</td></tr>
+            <tr><td><code>Ctrl+B</code> / <code>Ctrl+I</code></td><td>Жирный / Курсив</td></tr>
+            <tr><td><code>Ctrl+Shift+X</code> / <code>Ctrl+Shift+H</code></td><td>Зачёркивание / Подсветка</td></tr>
+            <tr><td><code>Alt+1</code>&hellip;<code>Alt+4</code></td><td>Заголовки H1&ndash;H4</td></tr>
+            <tr><td><code>Ctrl+S</code> / <code>Ctrl+Shift+S</code></td><td>Сохранить / Сохранить как&hellip;</td></tr>
+            <tr><td><code>Ctrl+N</code> / <code>Ctrl+T</code> / <code>Ctrl+W</code></td><td>Новая / закрыть вкладку</td></tr>
+            <tr><td><code>Ctrl+Tab</code> / <code>Ctrl+Shift+Tab</code></td><td>Вкладки (MRU)</td></tr>
+            <tr><td><code>Ctrl+F</code> / <code>Ctrl+H</code></td><td>Поиск / замена</td></tr>
             <tr><td><code>F11</code></td><td>Полный экран</td></tr>
-            <tr><td><code>Ctrl+Z</code></td><td>Отменить</td></tr>
-            <tr><td><code>Ctrl+Y</code> / <code>Ctrl+Shift+Z</code></td><td>Повторить</td></tr>
+            <tr><td><code>Ctrl+Z</code> / <code>Ctrl+Y</code></td><td>Отменить / Повторить</td></tr>
           </tbody>
         </table>
       </section>
@@ -337,11 +317,18 @@
             <tr><td>Сборка / dev-сервер</td><td>Vite 8</td></tr>
             <tr><td>UI</td><td>HTML + CSS + vanilla JS</td></tr>
             <tr><td>Markdown &rarr; HTML</td><td>marked</td></tr>
+            <tr><td>Подсветка кода</td><td>highlight.js</td></tr>
             <tr><td>Экспорт Word</td><td>docx</td></tr>
+            <tr><td>Экспорт PDF</td><td>html2pdf.js</td></tr>
             <tr><td>Десктоп</td><td>Tauri 2 (Rust)</td></tr>
             <tr><td>Диалоги файлов (Tauri)</td><td>rfd</td></tr>
           </tbody>
         </table>
+      </section>
+
+      <section class="about-section">
+        <h2>Где хранятся настройки</h2>
+        <p>В <code>localStorage</code> браузера / WebView: тема, вид, оглавление, split, сессия вкладок, интерфейс (<code>md-editor-interface</code>), раскладка панели (<code>md-editor-toolbar-layout</code>).</p>
       </section>
 
       <section class="about-section">
@@ -367,8 +354,9 @@
       </section>
 
       <section class="about-section">
-        <h2>Лицензия</h2>
+        <h2>Лицензия и автор</h2>
         <p><a href="https://github.com/neuromafka-create/MD-Editor/blob/master/LICENSE" target="_blank" rel="noopener" style="color: var(--accent-hover);">MIT</a> &mdash; используйте свободно.</p>
+        <p>Copyright &copy; by Maria Bortnikova</p>
       </section>
 
       <div class="about-links" style="justify-content: center; margin-top: 40px;">
