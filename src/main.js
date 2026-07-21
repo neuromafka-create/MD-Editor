@@ -1957,6 +1957,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const saveAsButton = document.getElementById('saveAsButton');
   const exportButton = document.getElementById('exportButton');
   const exportDocxButton = document.getElementById('exportDocxButton');
+  const newIconButton = document.getElementById('newIconButton');
+  const openIconButton = document.getElementById('openIconButton');
+  const saveIconButton = document.getElementById('saveIconButton');
+  const saveAsIconButton = document.getElementById('saveAsIconButton');
   const outlineToggle = document.getElementById('outlineToggle');
   const insertTocButton = document.getElementById('insertTocButton');
   const refreshTocButton = document.getElementById('refreshTocButton');
@@ -2128,6 +2132,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (saveAsButton) saveAsButton.addEventListener('click', () => saveFileAs(markdownInput));
   if (exportButton) exportButton.addEventListener('click', () => exportHtml(markdownInput));
   if (exportDocxButton) exportDocxButton.addEventListener('click', () => exportDocx(markdownInput));
+
+  if (newIconButton) newIconButton.addEventListener('click', () => openNewTab());
+  if (openIconButton) openIconButton.addEventListener('click', () => openFile());
+  if (saveIconButton) saveIconButton.addEventListener('click', () => saveFile(markdownInput));
+  if (saveAsIconButton) saveAsIconButton.addEventListener('click', () => saveFileAs(markdownInput));
 
   if (outlineToggle) {
     outlineToggle.addEventListener('click', () => {
