@@ -497,6 +497,90 @@ body[data-theme='light'] .app-shell {
   text-decoration: underline;
 }
 
+/* ——— Update dialog ——— */
+.update-modal {
+  width: min(480px, 100%);
+}
+
+.update-status {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.update-status[data-kind='ok'] {
+  color: #34d399;
+}
+
+body[data-theme='light'] .update-status[data-kind='ok'] {
+  color: #059669;
+}
+
+.update-status[data-kind='update'] {
+  color: var(--accent-text);
+}
+
+.update-status[data-kind='error'] {
+  color: #f87171;
+}
+
+body[data-theme='light'] .update-status[data-kind='error'] {
+  color: #dc2626;
+}
+
+.update-status[data-kind='pending'] {
+  color: var(--text-secondary);
+}
+
+.update-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.update-detail p {
+  margin: 0 0 4px;
+}
+
+.update-notes {
+  margin: 0 0 12px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-ui);
+}
+
+.update-auto-check {
+  margin-top: 4px;
+}
+
+.update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.update-install-btn {
+  background: var(--accent-soft) !important;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border)) !important;
+  color: var(--accent-text) !important;
+  font-weight: 600;
+}
+
+.update-install-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface)) !important;
+}
+
 /* ——— Interface settings dialog ——— */
 .modal-card.interface-modal {
   width: min(640px, 100%);

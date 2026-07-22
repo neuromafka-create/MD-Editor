@@ -1,6 +1,6 @@
 # MD Editor
 
-**MD Editor** — Markdown-редактор для десктопа и браузера (v1.3.0).
+**MD Editor** — Markdown-редактор для десктопа и браузера (v1.3.1).
 
 Стек: **Vite 8**, **Tauri 2**, vanilla JS, **marked**, **highlight.js**, **docx**, **html2pdf.js**.
 
@@ -67,7 +67,17 @@
 |-------|----------|
 | **Интерфейс** | Шрифты, цвета, фоны, курсор, контраст кода |
 | **Панель инструментов** | Перестановка кнопок и разделителей |
+| **Проверить обновления** | Сравнение с GitHub Releases; в Windows — скачать и запустить NSIS-установщик |
 | **О программе** | Компактное окно: название, версия, copyright, GitHub |
+
+### Обновления
+
+- **Настройки → Проверить обновления** — запрос к GitHub API (`releases/latest`)
+- Сравнение с версией из `package.json`
+- Если есть новее: заметки релиза, ссылка на GitHub
+- **Десктоп (Windows):** кнопка **Скачать и установить** загружает `*_x64-setup.exe` во временную папку и запускает мастер установки
+- Автопроверка раз в сутки при запуске десктопа (можно отключить в диалоге)
+- Для релиза на GitHub нужно прикладывать NSIS-установщик к Release (имя с `x64-setup.exe`)
 
 ### Настройки интерфейса
 
@@ -196,9 +206,10 @@ MD-Editor/
 │   ├── exportDocx.js
 │   ├── exportPdf.js
 │   ├── interfaceSettings.js    # Настройки интерфейса / курсора / кода
-│   └── toolbarLayout.js        # Раскладка панели инструментов
+│   ├── toolbarLayout.js        # Раскладка панели инструментов
+│   └── appUpdater.js           # Проверка обновлений (GitHub Releases)
 └── src-tauri/
-    ├── src/main.rs
+    ├── src/main.rs             # Файлы, картинки, скачивание установщика
     ├── tauri.conf.json
     ├── capabilities/
     └── Cargo.toml
@@ -258,7 +269,7 @@ npm run tauri:build
 
 | Артефакт | Путь |
 |----------|------|
-| **Установщик NSIS (x64)** | `src-tauri/target/release/bundle/nsis/MD Editor_1.3.0_x64-setup.exe` |
+| **Установщик NSIS (x64)** | `src-tauri/target/release/bundle/nsis/MD Editor_1.3.1_x64-setup.exe` |
 | Исполняемый файл | `src-tauri/target/release/md-editor.exe` |
 
 ---
@@ -287,6 +298,8 @@ npm run tauri:build
 | `md-editor-session` | Вкладки / сессия |
 | `md-editor-interface` | Шрифты, цвета, курсор, контраст кода |
 | `md-editor-toolbar-layout` | Порядок кнопок панели |
+| `md-editor-update-auto` | Автопроверка обновлений (`0` = выкл.) |
+| `md-editor-update-last-check` | Время последней проверки |
 
 ---
 

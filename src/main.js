@@ -6,6 +6,7 @@ import { version as appVersion } from '../package.json';
 import { markdownToDocxBytes } from './exportDocx.js';
 import { initInterfaceSettingsDialog } from './interfaceSettings.js';
 import { initToolbarCustomization } from './toolbarLayout.js';
+import { initUpdateDialog } from './appUpdater.js';
 import { extractHeadings, insertOrUpdateToc, findTocRange } from './toc.js';
 
 marked.use({
@@ -2347,6 +2348,7 @@ window.addEventListener('DOMContentLoaded', () => {
     onCloseOther: () => {
       closeAllMenus();
       closeAboutDialog();
+      updateDialogApi.close();
       toolbarCustomizeApi.exit();
     }
   });
@@ -2359,8 +2361,23 @@ window.addEventListener('DOMContentLoaded', () => {
       if (on) {
         closeAllMenus();
         closeAboutDialog();
+        updateDialogApi.close();
         interfaceDialogApi.close();
       }
+    }
+  });
+
+  /* ——— Updates ——— */
+  const updateDialogApi = initUpdateDialog({
+    dialog: document.getElementById('updateDialog'),
+    openButton: document.getElementById('checkUpdatesButton'),
+    isTauri: isTauriRuntime(),
+    tauriInvoke,
+    onCloseOther: () => {
+      closeAllMenus();
+      closeAboutDialog();
+      interfaceDialogApi.close();
+      toolbarCustomizeApi.exit();
     }
   });
 
@@ -2372,6 +2389,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function openAboutDialog() {
     if (!aboutDialog) return;
     interfaceDialogApi.close();
+    updateDialogApi.close();
     toolbarCustomizeApi.exit();
     if (aboutVersionEl) aboutVersionEl.textContent = `v${appVersion}`;
     aboutDialog.hidden = false;
@@ -2393,6 +2411,7 @@ window.addEventListener('DOMContentLoaded', () => {
       closeAllMenus();
       closeAboutDialog();
       interfaceDialogApi.close();
+      updateDialogApi.close();
       if (toolbarCustomizeApi.isActive()) {
         toolbarCustomizeApi.exit();
         e.preventDefault();
@@ -2414,6 +2433,13 @@ window.addEventListener('DOMContentLoaded', () => {
     aboutDialog.addEventListener('click', (e) => {
       if (e.target === aboutDialog) closeAboutDialog();
     });
+  }
+
+  // Silent update check (desktop, once per day)
+  if (isTauriRuntime()) {
+    setTimeout(() => {
+      void updateDialogApi.runSilentCheck();
+    }, 4000);
   }
 
   const savedTheme = localStorage.getItem('md-editor-theme') || 'dark';
